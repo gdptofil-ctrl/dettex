@@ -1,0 +1,38 @@
+
+{
+  "schemaVersion": 1,
+  "accessWidener": "matebal.accesswidener",
+  "id": "insidethesystem",
+  "version": "2.0",
+  "name": "DettexClient",
+  "description": "Minecraft Modification",
+  "authors": [
+    "dregir5"
+  ],
+  "icon": "insidethesystem-icon.png",
+  "contact": {
+    "website": "https://recoinclient.ru",
+    "repo": "none"
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "ru.recoin.core.Main"
+    ]
+  },
+  "mixins": [
+    "mixins.json",
+    "atmosphere.mixins.json"
+  ],
+  "custom": {
+    "badoptimizations:cache_hooks": {
+      "lightmap": "ru.recoin.common.compat.BadOptimizationsLightmapHook"
+    }
+  },
+  "depends": {
+    "fabricloader": ">=0.18.1",
+    "fabric": "*",
+    "minecraft": "~1.21.11"
+  }
+}

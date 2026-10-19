@@ -1,0 +1,32 @@
+{
+  "function_on1": {
+    "sounds": [
+      "minecraft:function_on1"
+    ]
+  },
+  "function_off1": {
+    "sounds": [
+      "minecraft:function_off1"
+    ]
+  },
+  "function_on2": {
+    "sounds": [
+      "minecraft:function_on2"
+    ]
+  },
+  "function_off2": {
+    "sounds": [
+      "minecraft:function_off2"
+    ]
+  },
+  "applepay": {
+    "sounds": [
+      "minecraft:applepay"
+    ]
+  },
+  "event": {
+    "sounds": [
+      "minecraft:event"
+    ]
+  }
+}

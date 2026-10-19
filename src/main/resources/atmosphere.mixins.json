@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.maksaidev.atmosphere.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "WeatherWorldMixin",
+    "WeatherRenderingMixin",
+    "WeatherSoundMixin",
+    "WeatherSkyMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

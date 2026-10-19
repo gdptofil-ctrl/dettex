@@ -1,0 +1,105 @@
+plugins {
+    id 'fabric-loom' version '1.17.12'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    maven {
+        name = 'MeteorDev'
+        url = 'https://maven.meteordev.org/snapshots'
+    }
+    maven {
+        name = 'babbaj'
+        url = 'https://babbaj.github.io/maven/'
+    }
+}
+
+loom {
+    // The sources target the intermediary namespace, so the access widener
+    // (already written in the intermediary namespace) is used as-is.
+    accessWidenerPath = file('src/main/resources/matebal.accesswidener')
+}
+
+// The decompiled sources live in the project root (ru/com/dev) instead of
+// the conventional src/main/java, so wire those in explicitly.
+sourceSets {
+    main {
+        java {
+            srcDirs = ['ru', 'com', 'net']
+            // Vendored GeckoLib sources (decompiled with lost generics) live in
+            // _vendor_sources_backup; the exact compiled classes are bundled via
+            // libs/geckolib.jar and the .class files under src/main/resources.
+            exclude 'recoin/api/mods/geckolib/**'
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+    // Development sources use intermediary names (net.minecraft.class_XXXX),
+    // matching how the original mod was compiled.
+    mappings "net.fabricmc:intermediary:${project.minecraft_version}:v2"
+
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // Baritone is a soft (reflection + optional compile) dependency, but
+    // ModuleRepository references its goals directly, so it must be present
+    // at runtime too (in production it is installed as a separate mod).
+    modImplementation "meteordevelopment:baritone:1.21.11-SNAPSHOT"
+    // Baritone's ElytraProcess needs nether-pathfinder at runtime.
+    runtimeOnly "dev.babbaj:nether-pathfinder:1.6"
+
+    // MixinExtras
+    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
+
+    // Third-party libraries that were bundled inside the original mod jar.
+    implementation include("org.jcodec:jcodec:0.2.5")
+    implementation include("org.jcodec:jcodec-javase:0.2.5")
+    implementation include("net.java.dev.jna:jna:5.14.0")
+    implementation include("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
+    implementation include("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.3")
+    implementation include("com.github.hypfvieh:dbus-java-core:4.2.1")
+    implementation include("com.github.hypfvieh:dbus-java-transport-native-unixsocket:4.2.1")
+
+    compileOnly "org.jetbrains:annotations:24.1.0"
+
+    // Prebuilt vendored GeckoLib classes (intermediary), used instead of the
+    // decompiled (and generic-lost) sources under ru/recoin/api/mods/geckolib.
+    compileOnly files("libs/geckolib.jar")
+
+    // Kotlin "mediaplayerinfo" library (dev/redstones/mediaplayerinfo): the
+    // decompiled Kotlin sources cannot be reproduced in Java, so the exact
+    // compiled classes are bundled via libs/mediaplayerinfo.jar and the
+    // .class files under src/main/resources/dev.
+    compileOnly files("libs/mediaplayerinfo.jar")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    options.compilerArgs << '-Xmaxerrs' << '10000'
+}
+

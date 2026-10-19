@@ -1,0 +1,139 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "cases": [
+      {
+        "when": "Abominable Scythe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/abominablescythe"
+        }
+      },
+      {
+        "when": "Arcanethyst",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/arcanethyst"
+        }
+      },
+      {
+        "when": "Bloody Death",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/bloodydeath"
+        }
+      },
+      {
+        "when": "Crescent Rose",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/crescentrose"
+        }
+      },
+      {
+        "when": "Demigod's Unholy Blade",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/demigodsunholyblade"
+        }
+      },
+      {
+        "when": "Demigods Unholy Blade",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/demigodsunholyblade"
+        }
+      },
+      {
+        "when": "Demigod's Unholy Halberd",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/demigodsunholyhalberd"
+        }
+      },
+      {
+        "when": "Demigods Unholy Halberd",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/demigodsunholyhalberd"
+        }
+      },
+      {
+        "when": "Demon Lord's Great Axe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/demonlordsgreataxe"
+        }
+      },
+      {
+        "when": "Demon Lords Great Axe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/demonlordsgreataxe"
+        }
+      },
+      {
+        "when": "Divine Axe Rhitta",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/divineaxerhitta"
+        }
+      },
+      {
+        "when": "Divine Reaper",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/divine_reaper"
+        }
+      },
+      {
+        "when": "Frost Axe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/frostaxe"
+        }
+      },
+      {
+        "when": "Frost Scythe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/frostscythe"
+        }
+      },
+      {
+        "when": "Icewhisper",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/icewhisper"
+        }
+      },
+      {
+        "when": "Magi Scythe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/magiscythe"
+        }
+      },
+      {
+        "when": "Requiem of the Ninth Abyss",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/requiem_of_hell"
+        }
+      },
+      {
+        "when": "Wraith Scythe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/greenscythe"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/mace"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "rain_continuous": {
+    "sounds": [
+      { "name": "maksatmosphere:rain_continuous", "stream": true, "preload": true }
+    ]
+  }
+}

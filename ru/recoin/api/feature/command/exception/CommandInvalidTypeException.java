@@ -1,0 +1,27 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
+package ru.recoin.api.feature.command.exception;
+
+import ru.recoin.api.feature.command.argument.ICommandArgument;
+import ru.recoin.api.feature.command.exception.CommandInvalidArgumentException;
+
+public class CommandInvalidTypeException
+extends CommandInvalidArgumentException {
+    public CommandInvalidTypeException(ICommandArgument arg, String expected) {
+        super(arg, String.format("Expected %s", expected));
+    }
+
+    public CommandInvalidTypeException(ICommandArgument arg, String expected, Throwable cause) {
+        super(arg, String.format("Expected %s", expected), cause);
+    }
+
+    public CommandInvalidTypeException(ICommandArgument arg, String expected, String got) {
+        super(arg, String.format("Expected %s, but got %s instead", expected, got));
+    }
+
+    public CommandInvalidTypeException(ICommandArgument arg, String expected, String got, Throwable cause) {
+        super(arg, String.format("Expected %s, but got %s instead", expected, got), cause);
+    }
+}
+
