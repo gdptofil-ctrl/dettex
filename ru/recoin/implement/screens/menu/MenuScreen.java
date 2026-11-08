@@ -30,7 +30,7 @@ import ru.recoin.common.util.math.MathUtil;
 import ru.recoin.common.util.render.GuiRenderFlusher;
 import ru.recoin.common.util.render.ItemGuiAlpha;
 import ru.recoin.common.util.render.Render2DUtil;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 import ru.recoin.implement.features.modules.render.Hud;
 import ru.recoin.implement.screens.menu.MenuCloseEffect;
 import ru.recoin.implement.screens.menu.MenuStyle;
@@ -210,7 +210,7 @@ implements QuickImports {
     }
 
     public void openGui() {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return;
         }
         this.closing = false;

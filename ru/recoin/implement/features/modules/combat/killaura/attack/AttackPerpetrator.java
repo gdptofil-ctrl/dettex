@@ -54,6 +54,7 @@ implements QuickImports {
         private final float maximumRange;
         private final boolean onlyCritical;
         private final boolean critsOnlySpace;
+        private final boolean smartCrits;
         private final boolean shouldBreakShield;
         private final boolean shouldUnPressShield;
         private final boolean randomizeHits;
@@ -75,6 +76,7 @@ implements QuickImports {
             this.maximumRange = maximumRange;
             this.onlyCritical = options.contains("Only Critical");
             this.critsOnlySpace = options.contains("Crits Only Space");
+            this.smartCrits = options.contains("Smart Crits");
             this.shouldBreakShield = options.contains("Break Shield");
             this.shouldUnPressShield = options.contains("UnPress Shield");
             this.randomizeHits = randomizeHits;
@@ -129,6 +131,10 @@ implements QuickImports {
 
         public boolean isCritsOnlySpace() {
             return this.critsOnlySpace;
+        }
+
+        public boolean isSmartCrits() {
+            return this.smartCrits;
         }
 
         public boolean isShouldBreakShield() {

@@ -1,0 +1,9 @@
+name = "dettex-sync"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+# Create the KV namespace first:  npx wrangler kv namespace create USERS
+# then paste the id it prints below.
+[[kv_namespaces]]
+binding = "USERS"
+id = "PASTE_KV_NAMESPACE_ID_HERE"

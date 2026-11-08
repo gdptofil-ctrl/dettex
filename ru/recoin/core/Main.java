@@ -89,6 +89,7 @@ implements ModInitializer {
 
     public void onInitialize() {
         instance = this;
+        ru.recoin.core.license.LicenseGate.get().start();   // online licence (HWID-bound, server-signed)
         PitBikeRegistry.initialize();
         EntityRendererRegistry.register(PitBikeRegistry.TYPE, PitBikeRenderer::new);
         this.initClientInfoProvider();
@@ -133,10 +134,37 @@ implements ModInitializer {
 
     @Native
     private void initClientInfoProvider() {
-        File clientDirectory = new File(class_310.method_1551().field_1697, "recoin");
+        File clientDirectory = new File(class_310.method_1551().field_1697, "dettexclient");
         File filesDirectory = new File(clientDirectory, "files");
         File moduleFilesDirectory = new File(filesDirectory, "config");
-        this.clientInfoProvider = new ClientInfo("DettexClient", "RAKE", "ADMIN", clientDirectory, filesDirectory, moduleFilesDirectory);
+        String role = "PLAYER";
+        String days = "";
+        try {
+            Object gate = Class.forName("ru.recoin.core.license.LicenseGate").getMethod("get").invoke(null);
+            if (gate != null) {
+                Object state = gate.getClass().getField("state").get(gate);
+                if (state != null) {
+                    try {
+                        Object rt = state.getClass().getField("rankText").get(state);
+                        if (rt != null) role = String.valueOf(rt);
+                    } catch (Throwable ignored) {}
+                    try {
+                        int r = state.getClass().getField("rank").getInt(state);
+                        if (role.equals("PLAYER")) {
+                            if (r == 3) role = "ADMIN";
+                            else if (r == 2) role = "ADMINISTRATOR";
+                            else if (r == 1) role = "MEDIA";
+                        }
+                    } catch (Throwable ignored) {}
+                    try {
+                        int dl = state.getClass().getField("daysLeft").getInt(state);
+                        if (dl >= 0) days = String.valueOf(dl);
+                    } catch (Throwable ignored) {}
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        this.clientInfoProvider = new ClientInfo("DettexClient" + (days.isEmpty() ? "" : " | " + days + "d"), "RAKE", role.toUpperCase(), clientDirectory, filesDirectory, moduleFilesDirectory);
     }
 
     @Native

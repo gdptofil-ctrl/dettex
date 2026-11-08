@@ -69,7 +69,7 @@ implements QuickImports {
     @Unique
     private static void renderBox(class_1297 entity) {
         if (entity != EntityRenderDispatcherMixin.mc.field_1724 || !EntityRenderDispatcherMixin.mc.field_1690.method_31044().equals((Object)class_5498.field_26664)) {
-            int color = FriendUtils.isFriend(entity) ? ColorUtil.getFriendColor() : ColorUtil.getClientColor();
+            int color = ru.recoin.implement.features.modules.render.hitcolor.HitColorHitbox.colorFor(entity, FriendUtils.isFriend(entity) ? ColorUtil.getFriendColor() : ColorUtil.getClientColor());
             class_243 offset = MathUtil.interpolate(entity).method_1020(entity.method_73189());
             class_238 box = entity.method_5829().method_997(offset);
             if (ProjectionUtil.canSee(box)) {

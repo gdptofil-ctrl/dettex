@@ -71,7 +71,7 @@ public final class AtmospherePipeline {
     private int lastWidth;
     private int lastHeight;
 
-    public void draw(Matrix4f projection, Matrix4f inverseProjection, Matrix4f cameraRotation, Vector3f cameraPosition, float time, int mode, float density, float scatterHeight, float rays, float softness, float amount, float speed, float haze, float grade, float vignette, int color) {
+    public void draw(Matrix4f projection, Matrix4f inverseProjection, Matrix4f cameraRotation, Vector3f cameraPosition, float time, int mode, float density, float scatterHeight, float rays, float softness, float amount, float speed, float haze, float grade, float vignette, int color, float sunX, float sunY, float wet, float flash) {
         class_310 client = class_310.method_1551();
         class_276 fb = client.method_1522();
         if (fb == null || fb.method_30277() == null || fb.method_71640() == null || fb.field_1482 <= 0 || fb.field_1481 <= 0) {
@@ -89,11 +89,11 @@ public final class AtmospherePipeline {
         cameraRotation.get(this.data);
         this.data.position(this.data.position() + 64);
         this.data.putFloat(cameraPosition.x).putFloat(cameraPosition.y).putFloat(cameraPosition.z).putFloat(0.0f);
-        this.data.putFloat(w).putFloat(h).putFloat(0.0f).putFloat(0.0f);
+        this.data.putFloat(w).putFloat(h).putFloat(sunX).putFloat(sunY);
         this.data.putFloat(density).putFloat(amount).putFloat(time).putFloat(mode);
         this.data.putFloat(vignette).putFloat(softness).putFloat(grade).putFloat(scatterHeight);
-        this.data.putFloat(haze).putFloat(rays).putFloat(speed).putFloat(0.0f);
-        this.data.putFloat((float)(color >>> 16 & 0xFF) / 255.0f).putFloat((float)(color >>> 8 & 0xFF) / 255.0f).putFloat((float)(color & 0xFF) / 255.0f).putFloat((float)(color >>> 24 & 0xFF) / 255.0f);
+        this.data.putFloat(haze).putFloat(rays).putFloat(speed).putFloat(wet);
+        this.data.putFloat((float)(color >>> 16 & 0xFF) / 255.0f).putFloat((float)(color >>> 8 & 0xFF) / 255.0f).putFloat((float)(color & 0xFF) / 255.0f).putFloat(flash);
         this.data.flip();
         int sz = this.data.remaining();
         if (this.uniformBuffer == null || this.uniformBuffer.size() < (long)sz) {

@@ -29,7 +29,7 @@ extends Module {
     private int targetGradientEnd = -7569409;
     private long cachedThemeColorTime;
     private transient int appliedAccentColor = -9659651;
-    public final SelectSetting hudLayoutSetting = new SelectSetting("Hud", "HUD style").value("Hud 1", "Hud 2").selected("Hud 1");
+    public final SelectSetting hudLayoutSetting = new SelectSetting("Hud", "HUD style").value("Hud 1", "Hud 2", "Hud 3").selected("Hud 1");
     public final MultiSelectSetting interfaceSettings = new MultiSelectSetting("Elements", "Customize the interface elements").value("Watermark", "Hot Keys", "ServerHelper Binds", "Potions", "Staff", "Target Hud", "Armor", "Cooldowns", "\u041a\u0443\u043b\u0434\u0430\u0443\u043d\u044b \u043f\u0440\u043e\u0442\u0438\u0432\u043d\u0438\u043a\u0430", "Inventory", "Notifications", "Media Player", "HotBar");
     public final SelectSetting languageSetting = new SelectSetting("Language", "Client interface language").value("\u0420\u0443\u0441\u0441\u043a\u0438\u0439", "English").selected("\u0420\u0443\u0441\u0441\u043a\u0438\u0439").visible(() -> false);
     public final MultiSelectSetting notificationSettings = new MultiSelectSetting("Notifications", "Choose when the notification will appear").value("Module Switch", "Staff Join", "Item Pick Up", "Item Cooldown", "Totem Pop", "Auto Armor", "Break Shield", "Potion Expire", "Low Durability").selected("Module Switch", "Item Cooldown").visible(() -> false);
@@ -57,7 +57,7 @@ extends Module {
     public final ColorSetting hudBlurColorSetting = new ColorSetting("HUD Blur Color", "\u0426\u0432\u0435\u0442 \u0431\u043b\u044e\u0440\u0430 \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u043e\u0432 HUD").setColor(-16777216).presets(-16777216, -15656921, -1, -9659651, -7569409, -12200449, -11147598, -37990);
     public final ColorSetting guiAccentColorSetting = new ColorSetting("GUI Accent Color", "\u0426\u0432\u0435\u0442 \u0438\u043a\u043e\u043d\u043e\u043a \u0438 \u044d\u043b\u0435\u043c\u0435\u043d\u0442\u043e\u0432 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f GUI").setColor(-9659651).presets(-9659651, -7569409, -12200449, -11147598, -37990, -1).visible(() -> false);
     public final ColorSetting guiBackgroundColorSetting = new ColorSetting("GUI Background Color", "\u0426\u0432\u0435\u0442 \u0442\u043e\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f \u0431\u043b\u044e\u0440\u0430 GUI").setColor(-15656921).presets(-15656921, -15194824, -15260373, -14345685, -13950944, -14080232, -15193825, -14670804).visible(() -> false);
-    public final SelectSetting themeSetting = new SelectSetting("Theme", "Select client color theme").value("Blue", "Deep Blue", "White", "Green", "Pink", "Purple", "Red", "Red-Black", "Orange", "Turquoise", "Cyberpunk", "Neon Violet", "Midnight Rose", "Toxic Lime", "Blood Moon", "Ocean Wave", "Lavender Dream", "Matrix", "Sunset", "Rainbow", "Gold", "Emerald", "Azure", "Arctic", "Amethyst", "Lime", "Cherry", "Rose").selected("Blue");
+    public final SelectSetting themeSetting = new SelectSetting("Theme", "Select client color theme").value("Blue", "Deep Blue", "White", "Green", "Pink", "Purple", "Red", "Red-Black", "Orange", "Turquoise", "Cyberpunk", "Neon Violet", "Midnight Rose", "Toxic Lime", "Blood Moon", "Ocean Wave", "Lavender Dream", "Matrix", "Sunset", "Rainbow", "Gold", "Emerald", "Azure", "Arctic", "Amethyst", "Lime", "Cherry", "Rose", "Halloween", "Winter").selected("Blue");
     public final ButtonSetting openThemeEditor = new ButtonSetting("Theme Editor", "Open the theme editor column").setButtonName("\u041e\u0442\u043a\u0440\u044b\u0442\u044c").setRunnable(() -> {}).visible(() -> false);
     public final SelectSetting customThemeColorCount = new SelectSetting("Color Count", "How many colors custom theme uses").value("1", "2", "3", "4").selected("2").visible(() -> false);
     public final ColorSetting customThemeColor1 = new ColorSetting("Color 1", "First custom theme color").setColor(-9659651).visible(() -> false);
@@ -127,6 +127,11 @@ extends Module {
 
     public boolean isRussianLanguage() {
         return !this.languageSetting.isSelected("English");
+    }
+
+    /** Hud 3: the Hud 1 layout with neon-glass panels (rounder, darker glass, animated theme glow and outline). */
+    public boolean isHud3() {
+        return this.hudLayoutSetting != null && this.hudLayoutSetting.isSelected("Hud 3");
     }
 
     public boolean isHud2() {
@@ -314,6 +319,8 @@ extends Module {
             case "Matrix" -> -15914984;
             case "Sunset" -> Color.HSBtoRGB(this.smoothCycle(now, 16000L, 0.015f, 0.085f), 0.68f, 1.0f) | 0xFF000000;
             case "Rainbow" -> Color.HSBtoRGB((float)(now % 18000L) / 18000.0f, 0.56f, 1.0f) | 0xFF000000;
+            case "Halloween" -> 0xFFFF8A1E;
+            case "Winter" -> 0xFF9FE2FF;
             default -> -9659651;
         };
     }
@@ -362,6 +369,8 @@ extends Module {
                 float hue = (float)(now % 18000L) / 18000.0f + 0.18f;
                 yield Color.HSBtoRGB(hue - (float)Math.floor(hue), 0.56f, 1.0f) | 0xFF000000;
             }
+            case "Halloween" -> 0xFF9B4DFF;
+            case "Winter" -> 0xFFF2FBFF;
             default -> -7569409;
         };
     }

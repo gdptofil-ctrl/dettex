@@ -194,6 +194,7 @@ extends AbstractComponent {
             case ModuleCategory.COMBAT -> "\ue007";
             case ModuleCategory.MOVEMENT -> "\ue044";
             case ModuleCategory.PLAYER -> "\ue08a";
+            case ModuleCategory.PVE -> "\ue007";
             case ModuleCategory.RENDER -> "\ue07a";
             case ModuleCategory.MISC -> "";
         };

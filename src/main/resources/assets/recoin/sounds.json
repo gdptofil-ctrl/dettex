@@ -1,0 +1,507 @@
+{
+  "events.mace_heavy_punch": {
+    "subtitle": "Heavy Punch",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_heavy_punch_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_heavy_punch_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_heavy_punch_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_heavy_punch_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_heavy_punch_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.mace_metal": {
+    "subtitle": "Metal Clang",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_metal_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_metal_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_metal_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_metal_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_metal_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.mace_bell": {
+    "subtitle": "Bell Bonk",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_bell_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_bell_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_bell_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_bell_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_bell_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.mace_plate": {
+    "subtitle": "Armor Plate",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_plate_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_plate_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_plate_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_plate_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_plate_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.mace_crunch": {
+    "subtitle": "Crunch",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_crunch_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_crunch_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_crunch_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_crunch_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_crunch_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.mace_boom": {
+    "subtitle": "Boom",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_boom_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_boom_1",
+        "stream": false
+      }
+    ]
+  },
+  "events.mace_smack": {
+    "subtitle": "Smack",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_smack_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_smack_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_smack_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_smack_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_smack_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.mace_wood": {
+    "subtitle": "Wooden Club",
+    "sounds": [
+      {
+        "name": "recoin:events/mace_wood_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_wood_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_wood_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_wood_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/mace_wood_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_combo_breaker": {
+    "subtitle": "Combo Breaker",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_combo_breaker",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_combo": {
+    "subtitle": "Combo",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_combo",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_glass": {
+    "subtitle": "Glass Shatter",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_glass_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_glass_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_glass_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_glass_3",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_glass_4",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_coin": {
+    "subtitle": "Coin",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_coin",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_power_up": {
+    "subtitle": "Power Up",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_power_up_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_power_up_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_power_up_2",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_objective": {
+    "subtitle": "Objective Achieved",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_objective",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_jingle": {
+    "subtitle": "Jingle",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_jingle_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_jingle_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_jingle_2",
+        "stream": false
+      }
+    ]
+  },
+  "events.totem_chips": {
+    "subtitle": "Casino Chips",
+    "sounds": [
+      {
+        "name": "recoin:events/totem_chips_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_chips_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_chips_2",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/totem_chips_3",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_multi_kill": {
+    "subtitle": "Multi Kill",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_multi_kill",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_flawless": {
+    "subtitle": "Flawless Victory",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_flawless",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_winner": {
+    "subtitle": "Winner",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_winner",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_you_win": {
+    "subtitle": "You Win",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_you_win",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_target_destroyed": {
+    "subtitle": "Target Destroyed",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_target_destroyed",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_mission_completed": {
+    "subtitle": "Mission Completed",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_mission_completed",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_highscore": {
+    "subtitle": "New Highscore",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_highscore",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_fanfare": {
+    "subtitle": "Fanfare",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_fanfare_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/kill_fanfare_1",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/kill_fanfare_2",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_you_lose": {
+    "subtitle": "You Lose",
+    "sounds": [
+      {
+        "name": "recoin:events/death_you_lose",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_game_over": {
+    "subtitle": "Game Over",
+    "sounds": [
+      {
+        "name": "recoin:events/death_game_over",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_loser": {
+    "subtitle": "Loser",
+    "sounds": [
+      {
+        "name": "recoin:events/death_loser",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_mission_failed": {
+    "subtitle": "Mission Failed",
+    "sounds": [
+      {
+        "name": "recoin:events/death_mission_failed",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_sudden_death": {
+    "subtitle": "Sudden Death",
+    "sounds": [
+      {
+        "name": "recoin:events/death_sudden_death",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_sad_sax": {
+    "subtitle": "Sad Sax",
+    "sounds": [
+      {
+        "name": "recoin:events/death_sad_sax_0",
+        "stream": false
+      },
+      {
+        "name": "recoin:events/death_sad_sax_1",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_low_down": {
+    "subtitle": "Power Down",
+    "sounds": [
+      {
+        "name": "recoin:events/death_low_down",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_arcade_combo": {
+    "subtitle": "Arcade Combo",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_arcade_combo",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_bass_drop": {
+    "subtitle": "Bass Drop",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_bass_drop",
+        "stream": false
+      }
+    ]
+  },
+  "events.kill_star_collect": {
+    "subtitle": "Star Collect",
+    "sounds": [
+      {
+        "name": "recoin:events/kill_star_collect",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_retro_fall": {
+    "subtitle": "Retro Fall",
+    "sounds": [
+      {
+        "name": "recoin:events/death_retro_fall",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_glitch_out": {
+    "subtitle": "Glitch Out",
+    "sounds": [
+      {
+        "name": "recoin:events/death_glitch_out",
+        "stream": false
+      }
+    ]
+  },
+  "events.death_deflate": {
+    "subtitle": "Deflate",
+    "sounds": [
+      {
+        "name": "recoin:events/death_deflate",
+        "stream": false
+      }
+    ]
+  }
+}

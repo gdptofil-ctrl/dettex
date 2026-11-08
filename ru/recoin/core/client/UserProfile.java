@@ -39,6 +39,11 @@ public final class UserProfile {
     }
 
     public static String getExpire() {
+        ru.recoin.core.license.LicenseGate gate = ru.recoin.core.license.LicenseGate.get();
+        if (gate.enabled() && gate.license() != null) {
+            long exp = gate.expires();
+            return exp == Long.MAX_VALUE ? "lifetime" : String.valueOf(exp);
+        }
         return UserProfile.nativeValue("subTime", "");
     }
 
@@ -67,6 +72,10 @@ public final class UserProfile {
     }
 
     public static String getRole() {
+        String licRole = ru.recoin.core.license.LicenseGate.get().role();
+        if (licRole != null && !licRole.isBlank()) {
+            return licRole;
+        }
         return UserProfile.nativeValue("role", DEFAULT_ROLE);
     }
 

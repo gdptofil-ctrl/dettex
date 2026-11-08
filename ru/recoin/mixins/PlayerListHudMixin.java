@@ -45,7 +45,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import ru.recoin.api.repository.friend.FriendUtils;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.render.cosmetics.sync.DettexBadge;
+import ru.recoin.implement.features.modules.misc.Unhook;
 import ru.recoin.implement.features.modules.render.UiAnimationManager;
 
 @Mixin(value={class_355.class})
@@ -60,7 +61,7 @@ public abstract class PlayerListHudMixin {
     @Inject(method={"method_1918"}, at={@At(value="RETURN")}, cancellable=true)
     private void recoin$decorateNearbyPlayer(class_640 entry, CallbackInfoReturnable<class_2561> cir) {
         double distanceSquared;
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return;
         }
         class_310 client = class_310.method_1551();
@@ -71,7 +72,7 @@ public abstract class PlayerListHudMixin {
         if (FriendUtils.isFriend(entry.method_2966().name())) {
             result.method_10852((class_2561)class_2561.method_43470((String)"Friend ").method_27692(class_124.field_1060));
         }
-        result.method_10852((class_2561)((class_2561)cir.getReturnValue()).method_27661());
+        result.method_10852(DettexBadge.decorate(entry.method_2966().id(), (class_2561)((class_2561)cir.getReturnValue()).method_27661()));
         class_1657 player = client.field_1687.method_18470(entry.method_2966().id());
         if (player != null && player != client.field_1724 && player.method_5805() && !player.method_7325() && (distanceSquared = player.method_5858((class_1297)client.field_1724)) <= 10000.0) {
             double dx = player.method_23317() - client.field_1724.method_23317();

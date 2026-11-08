@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dettex Launcher</title>
+<style>
+:root {
+  --bg: #06060b;
+  --panel: rgba(18, 18, 30, .62);
+  --panel-solid: #12121e;
+  --line: rgba(255, 255, 255, .08);
+  --text: #eef0ff;
+  --muted: #8d90b0;
+  --a: #5ee7ff;
+  --b: #8b5cff;
+  --c: #ff4fd8;
+  --ok: #4ade80;
+  --bad: #ff5c7a;
+  --grad: linear-gradient(120deg, var(--a), var(--b) 55%, var(--c));
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text);
+  font: 14px/1.45 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; user-select: none; -webkit-user-select: none; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+input { font: inherit; color: inherit; }
+
+/* ---------- background ---------- */
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.aurora { position: fixed; inset: -20%; z-index: 0; filter: blur(70px); opacity: .55; pointer-events: none; }
+.aurora i { position: absolute; border-radius: 50%; mix-blend-mode: screen; animation: drift 22s ease-in-out infinite alternate; }
+.aurora i:nth-child(1) { width: 46vw; height: 46vw; left: 2%; top: 8%; background: radial-gradient(circle, #2a7bff 0%, transparent 65%); }
+.aurora i:nth-child(2) { width: 40vw; height: 40vw; right: 6%; top: 0; background: radial-gradient(circle, #8b5cff 0%, transparent 65%); animation-duration: 28s; animation-delay: -6s; }
+.aurora i:nth-child(3) { width: 36vw; height: 36vw; left: 38%; bottom: -4%; background: radial-gradient(circle, #ff4fd8 0%, transparent 62%); animation-duration: 26s; animation-delay: -12s; opacity: .7; }
+@keyframes drift { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(6vw, 4vh) scale(1.12); } 100% { transform: translate(-5vw, -3vh) scale(.95); } }
+.grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(0,0,0,.6) 100%); }
+
+/* ---------- title bar ---------- */
+.titlebar { position: fixed; top: 0; left: 0; right: 0; height: 40px; z-index: 20; display: flex; align-items: center; padding: 0 6px 0 16px; }
+.titlebar .drag { position: absolute; inset: 0; }
+.brand { position: relative; display: flex; align-items: center; gap: 10px; pointer-events: none; font-weight: 700; letter-spacing: .14em; font-size: 12px; color: #c9ccef; }
+.brand .dot { width: 10px; height: 10px; border-radius: 3px; background: var(--grad); box-shadow: 0 0 14px var(--b); transform: rotate(45deg); }
+.brand small { font-weight: 500; letter-spacing: .02em; color: var(--muted); }
+.tb-btns { margin-left: auto; position: relative; display: flex; gap: 2px; }
+.tb-btns button { width: 40px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: #b7bad8; transition: background .15s, color .15s; }
+.tb-btns button:hover { background: rgba(255,255,255,.08); color: #fff; }
+.tb-btns button.x:hover { background: #e5484d; color: #fff; }
+.tb-btns svg { width: 14px; height: 14px; }
+
+/* ---------- layout ---------- */
+.app { position: relative; z-index: 5; height: 100%; display: grid; grid-template-columns: 1fr 340px; gap: 22px; padding: 64px 30px 28px 44px; }
+.hero { display: flex; flex-direction: column; min-width: 0; }
+.tag { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(94,231,255,.08); border: 1px solid rgba(94,231,255,.25); color: #aef3ff; font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.tag .live { width: 7px; height: 7px; border-radius: 50%; background: var(--a); box-shadow: 0 0 10px var(--a); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+h1 { margin-top: 18px; font-size: 96px; line-height: .95; font-weight: 900; letter-spacing: -.02em; position: relative; }
+h1 .word { background: var(--grad); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 6s linear infinite; filter: drop-shadow(0 6px 30px rgba(139,92,255,.35)); }
+@keyframes shine { to { background-position: 200% 0; } }
+h1::after { content: "DETTEX"; position: absolute; left: 0; top: 0; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07); transform: translate(6px, 6px); z-index: -1; }
+.sub { margin-top: 12px; font-size: 17px; color: #b8bbd9; max-width: 520px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.chip { padding: 6px 11px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); color: #c6c9e6; font-size: 12.5px; backdrop-filter: blur(10px); }
+.chip b { color: #fff; font-weight: 600; }
+
+.stats { display: flex; gap: 34px; margin-top: 30px; }
+.stat b { display: block; font-size: 34px; font-weight: 800; line-height: 1; letter-spacing: -.02em; background: linear-gradient(180deg, #fff, #a9adda); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stat span { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); letter-spacing: .03em; }
+.stat + .stat { padding-left: 34px; border-left: 1px solid var(--line); }
+.news { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; backdrop-filter: blur(16px); }
+.news .card { padding: 14px 14px 13px; position: relative; overflow: hidden; transition: transform .25s, border-color .25s; }
+.news .card:hover { transform: translateY(-3px); border-color: rgba(139,92,255,.45); }
+.news .card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: var(--grad); opacity: .8; }
+.news h4 { font-size: 13.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 7px; }
+.news p { font-size: 12.3px; color: var(--muted); line-height: 1.4; }
+.news .ico { font-size: 15px; }
+
+/* ---------- side ---------- */
+.side { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.account { padding: 16px; display: flex; align-items: center; gap: 13px; }
+.avatar { width: 52px; height: 52px; border-radius: 12px; background: #1c1c2e; image-rendering: pixelated; flex: none; overflow: hidden; display: grid; place-items: center; font-weight: 800; font-size: 22px; color: #fff; position: relative; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.4); }
+.avatar img { width: 100%; height: 100%; image-rendering: pixelated; }
+.who { min-width: 0; flex: 1; }
+.who .name-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.who .name { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid; flex: none; line-height: 1.1; }
+.rank-0 { color: #aab4c4; background: rgba(170,180,196,.12); border-color: rgba(170,180,196,.35); }
+.rank-1 { color: #5ee7ff; background: rgba(94,231,255,.12); border-color: rgba(94,231,255,.4); }
+.rank-2 { color: #ffc45c; background: rgba(255,196,92,.12); border-color: rgba(255,196,92,.4); }
+.rank-3 { color: #ff6b8a; background: rgba(255,107,138,.14); border-color: rgba(255,107,138,.45); }
+.who .meta { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.who .meta .ok { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+.icon-btn { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #aeb1d0; background: rgba(255,255,255,.04); border: 1px solid var(--line); transition: .15s; }
+.icon-btn:hover { color: #fff; background: rgba(255,255,255,.09); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+.ms-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; border-radius: 14px; background: #f3f4ff; color: #111; font-weight: 700; font-size: 14.5px; transition: transform .15s, box-shadow .2s; box-shadow: 0 10px 30px rgba(94,231,255,.15); }
+.ms-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(139,92,255,.3); }
+.ms-btn .ms { display: grid; grid-template-columns: 9px 9px; gap: 2px; }
+.ms-btn .ms i { width: 9px; height: 9px; display: block; }
+.login-hint { font-size: 12px; color: var(--muted); text-align: center; margin-top: 9px; }
+.offline-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.offline-row .field { flex: 1; width: auto; min-width: 0; padding: 12px 13px; border-radius: 12px; }
+.offline-row .btn { flex: none; padding: 0 18px; border-radius: 12px; background: var(--grad); color: #fff; }
+.offline-or { display: flex; align-items: center; gap: 9px; margin: 12px 0 2px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
+.offline-or::before, .offline-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.who .meta .off { width: 7px; height: 7px; border-radius: 50%; background: #ffb900; box-shadow: 0 0 8px #ffb900; }
+
+.quick { padding: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.quick button { padding: 11px 10px; border-radius: 11px; display: flex; align-items: center; gap: 9px; color: #c3c6e4; font-size: 13px; transition: .15s; }
+.quick button:hover { background: rgba(255,255,255,.06); color: #fff; }
+.quick svg { width: 16px; height: 16px; opacity: .85; }
+
+.play-wrap { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+.ram-line { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 0 4px; }
+.ram-line b { color: #dfe2ff; }
+.play { position: relative; height: 74px; border-radius: 18px; overflow: hidden; font-weight: 900; font-size: 25px; letter-spacing: .16em; color: #fff;
+  background: var(--grad); background-size: 220% 100%; animation: shine 5s linear infinite; box-shadow: 0 14px 44px rgba(139,92,255,.45), inset 0 1px 0 rgba(255,255,255,.35); transition: transform .15s, box-shadow .25s, filter .2s; }
+.play:hover { transform: translateY(-2px) scale(1.01); box-shadow: 0 18px 56px rgba(139,92,255,.6), inset 0 1px 0 rgba(255,255,255,.4); }
+.play:active { transform: scale(.985); }
+.play::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); animation: sweep 3.2s ease-in-out infinite; }
+@keyframes sweep { 60%, 100% { transform: translateX(120%); } }
+.play[disabled] { filter: grayscale(.6) brightness(.7); cursor: not-allowed; animation: none; }
+.play .lbl { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.play .lbl svg { width: 22px; height: 22px; }
+
+.update { height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 9px;
+  font-weight: 800; font-size: 13px; letter-spacing: .14em; color: #dfe2ff; background: rgba(255,255,255,.055);
+  border: 1px solid rgba(139,92,255,.35); transition: .15s; }
+.update:hover:not([disabled]) { border-color: rgba(94,231,255,.6); background: rgba(139,92,255,.16); color: #fff; }
+.update[disabled] { opacity: .45; cursor: not-allowed; }
+.update svg { width: 17px; height: 17px; }
+
+.progress { display: none; padding: 16px 16px 14px; }
+.progress.on { display: block; animation: rise .3s ease; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+.p-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.p-title { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-pct { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.bar { margin-top: 10px; height: 8px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; position: relative; }
+.bar i { position: absolute; top: 0; bottom: 0; left: 0; width: 0; border-radius: inherit; background: var(--grad); background-size: 200% 100%; animation: shine 2s linear infinite; box-shadow: 0 0 16px rgba(94,231,255,.6); }
+.p-meta { margin-top: 9px; display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.p-meta button { color: #ffb3c1; font-size: 12px; }
+.p-meta button:hover { color: #fff; text-decoration: underline; }
+
+/* ---------- modal / toast ---------- */
+.veil { position: fixed; inset: 0; z-index: 40; background: rgba(4,4,10,.55); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; }
+.veil.on { display: flex; animation: fade .2s ease; }
+@keyframes fade { from { opacity: 0; } }
+.modal { width: 470px; max-width: calc(100% - 40px); padding: 22px; background: rgba(16,16,28,.92); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 30px 80px rgba(0,0,0,.6); animation: pop .25s cubic-bezier(.2,1.4,.4,1); }
+@keyframes pop { from { transform: scale(.94); opacity: 0; } }
+.modal h3 { font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+.row:first-of-type { border-top: 0; }
+.row .t { font-weight: 600; font-size: 13.5px; }
+.row .d { font-size: 12px; color: var(--muted); }
+.switch { width: 44px; height: 26px; border-radius: 99px; background: rgba(255,255,255,.12); position: relative; flex: none; transition: background .2s; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .22s cubic-bezier(.3,1.4,.5,1); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.switch.on { background: var(--grad); }
+.switch.on::after { transform: translateX(18px); }
+.ram { width: 100%; margin-top: 10px; -webkit-appearance: none; height: 6px; border-radius: 99px; background: linear-gradient(90deg, var(--a), var(--b)) 0/var(--p, 50%) 100% no-repeat, rgba(255,255,255,.1); outline: none; }
+.ram::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(139,92,255,.35); cursor: pointer; }
+.field { width: 210px; padding: 9px 11px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid var(--line); outline: none; user-select: text; -webkit-user-select: text; }
+.field:focus { border-color: rgba(139,92,255,.6); }
+.err-text { white-space: pre-wrap; font: 12px/1.45 Consolas, monospace; color: #ffd2db; background: rgba(255,92,122,.08); border: 1px solid rgba(255,92,122,.25); padding: 12px; border-radius: 12px; max-height: 260px; overflow: auto; user-select: text; -webkit-user-select: text; }
+.btn { padding: 10px 16px; border-radius: 11px; background: rgba(255,255,255,.08); font-weight: 600; }
+.btn:hover { background: rgba(255,255,255,.14); }
+.btn.primary { background: var(--grad); }
+.modal .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.toasts { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 50; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.toast { padding: 10px 16px; border-radius: 12px; background: rgba(20,20,34,.95); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.5); font-weight: 600; font-size: 13px; animation: rise .25s ease; }
+.hidden { display: none !important; }
+.key-input{width:100%;box-sizing:border-box;margin:14px 0 4px;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font:600 16px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:2px;text-align:center;text-transform:uppercase;outline:none}
+.key-input:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.25)}
+.lic-line { margin: -6px 2px 0; padding: 8px 12px; border-radius: 11px; background: rgba(94,231,255,.06); border: 1px solid rgba(94,231,255,.18); font-size: 12px; color: #bfe9ff; display: flex; gap: 7px; align-items: center; }
+.lic-line b { color: #fff; font-weight: 700; }
+.lic-line .dot { width: 7px; height: 7px; border-radius: 50%; background: #5ee7ff; box-shadow: 0 0 8px #5ee7ff; flex: none; }
+.lic-line.bad { background: rgba(255,92,122,.07); border-color: rgba(255,92,122,.22); color: #ffd2db; }
+.lic-line.bad .dot { background: #ff5c7a; box-shadow: 0 0 8px #ff5c7a; }
+</style>
+</head>
+<body>
+<div class="aurora"><i></i><i></i><i></i></div>
+<canvas id="fx"></canvas>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<div class="titlebar">
+  <div class="drag" id="drag"></div>
+  <div class="brand"><span class="dot"></span>DETTEX LAUNCHER <small id="ver"></small></div>
+  <div class="tb-btns">
+    <button id="bSettings" title="Настройки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <button id="bMin" title="Свернуть"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+    <button id="bClose" class="x" title="Закрыть"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+</div>
+
+<div class="app">
+  <section class="hero">
+    <span class="tag"><span class="live"></span><span id="mcTag">Minecraft 1.21.11 · Fabric</span></span>
+    <h1><span class="word">DETTEX</span></h1>
+    <p class="sub">Клиент нового поколения: плавный, быстрый и красивый. Нажми «Играть» — лаунчер сам всё скачает и обновит.</p>
+    <div class="chips">
+      <span class="chip"><b>Java 21</b> от Mojang</span>
+      <span class="chip"><b>G1GC</b> без фризов</span>
+      <span class="chip"><b>FPS-пакет</b> по желанию</span>
+      <span class="chip"><b>Только нужное</b> докачивается</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><b data-count="160">0</b><span>модулей</span></div>
+      <div class="stat"><b>1</b><span>клик до игры</span></div>
+      <div class="stat"><b>0 ₽</b><span>за обновления</span></div>
+    </div>
+    <div class="news">
+      <div class="card"><h4><span class="ico">🌐</span>Браузер в мире</h4><p>Экраны с сайтами и видео прямо в игре, клики мышкой, ввод в поиск.</p></div>
+      <div class="card"><h4><span class="ico">🎙</span>Боб</h4><p>Голосовой помощник: понимает речь, отвечает голосом, включает модули.</p></div>
+      <div class="card"><h4><span class="ico">✨</span>Косметика</h4><p>Модели, крылья, плащи и звуки — видны другим игрокам Dettex.</p></div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="card account" id="accCard">
+      <div class="avatar" id="avatar">?</div>
+      <div class="who"><div class="name-row"><div class="name" id="accName">Гость</div><span class="rank hidden" id="rankChip">Player</span></div><div class="meta" id="accMeta">не выполнен вход</div></div>
+      <button class="icon-btn hidden" id="bLogout" title="Выйти"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+    </div>
+    <div class="lic-line hidden" id="licLine"><span class="dot"></span><span id="licText"></span></div>
+    <div id="loginBox">
+      <div class="offline-row">
+        <input class="field" id="nick" placeholder="Ник (3–16 символов)" maxlength="16" spellcheck="false" autocomplete="off">
+        <button class="btn" id="bOffline">Войти</button>
+      </div>
+      <div class="login-hint">Вход по нику без лицензии — для оффлайн-серверов.</div>
+      <div class="offline-or">или</div>
+      <button class="ms-btn" id="bLogin"><span class="ms"><i style="background:#f25022"></i><i style="background:#7fba00"></i><i style="background:#00a4ef"></i><i style="background:#ffb900"></i></span><span id="loginLbl">Войти через Microsoft</span></button>
+      <div class="login-hint">Вход на сайте Microsoft. Пароль лаунчер не видит.</div>
+    </div>
+    <div class="card quick">
+      <button data-open="game"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Папка игры</button>
+      <button data-open="mods"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>Моды</button>
+      <button data-open="logs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Логи</button>
+      <button id="bSettings2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>Настройки</button>
+    </div>
+    <div class="play-wrap">
+      <div class="card progress" id="prog">
+        <div class="p-top"><span class="p-title" id="pTitle">Подготовка…</span><span class="p-pct" id="pPct">0%</span></div>
+        <div class="bar"><i id="pBar"></i></div>
+        <div class="p-meta"><span id="pMeta">&nbsp;</span><button id="bCancel">Отмена</button></div>
+      </div>
+      <div class="ram-line"><span>Память: <b id="ramShow">4 ГБ</b></span><span id="jarShow"></span></div>
+      <button class="update" id="bUpdate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span id="updateLbl">ОБНОВИТЬ</span></button>
+      <button class="play" id="bPlay"><span class="lbl"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span id="playLbl">ИГРАТЬ</span></span></button>
+    </div>
+  </aside>
+</div>
+
+<div class="veil" id="settingsVeil">
+  <div class="modal">
+    <h3>Настройки <button class="icon-btn" data-close><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h3>
+    <div class="row" style="display:block">
+      <div style="display:flex;justify-content:space-between"><span class="t">Оперативная память</span><b id="ramVal">4 ГБ</b></div>
+      <input type="range" class="ram" id="ram" min="2048" max="16384" step="512">
+      <div class="d" id="ramHint" style="margin-top:6px"></div>
+    </div>
+    <div class="row"><div><div class="t">FPS-пакет</div><div class="d">Lithium, FerriteCore, Entity Culling, ImmediatelyFast</div></div><button class="switch" data-set="perfMods"></button></div>
+    <div class="row"><div><div class="t">Закрывать лаунчер</div><div class="d">После запуска игры освобождает память</div></div><button class="switch" data-set="closeOnLaunch"></button></div>
+    <div class="row"><div><div class="t">Сразу на сервер</div><div class="d">Адрес сервера (необязательно)</div></div><input class="field" id="server" placeholder="mc.example.net" spellcheck="false"></div>
+    <div class="actions"><button class="btn" data-open="launcher">Папка лаунчера</button><button class="btn primary" data-close>Готово</button></div>
+  </div>
+</div>
+
+<div class="veil" id="errVeil">
+  <div class="modal">
+    <h3>Что-то пошло не так</h3>
+    <div class="err-text" id="errText"></div>
+    <div class="actions"><button class="btn" data-open="logs">Открыть логи</button><button class="btn primary" data-close>Понятно</button></div>
+  </div>
+</div>
+<div class="veil" id="keyVeil">
+  <div class="modal">
+    <h3>Введи ключ Dettex</h3>
+    <div class="err-text" id="keyText">Получи ключ в Telegram-боте <b>@dettexclient_bot</b> и вставь его сюда: <b>DTX-…</b> или <b>DETEX-…</b>.</div>
+    <input id="keyInput" class="key-input" placeholder="DTX-… / DETEX-…" maxlength="25" autocomplete="off" spellcheck="false">
+    <div class="actions"><button class="btn" id="keyBotBtn">Открыть бота</button><button class="btn primary" id="keyGo">Активировать</button></div>
+  </div>
+</div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  // In a normal browser (preview) the Go functions do not exist: use a small demo backend.
+  const demo = typeof window.dtxState !== 'function';
+  const api = name => (...a) => demo ? Demo[name](...a) : window[name](...a);
+  const Demo = {
+    st: { version: '1.0.0', mc: '1.21.11', account: null, license: null, settings: { ramMB: 4096, perfMods: true, closeOnLaunch: true, server: '' }, maxRam: 16384, jar: 'встроен в лаунчер', busy: false },
+    dtxState() { return Promise.resolve(this.st); },
+    dtxRedeemKey(k) { setTimeout(() => {
+      const expires = Math.floor(Date.now() / 1000) + 30 * 86400;
+      this.st.license = { active: true, plan: 30, planText: '30 дней', lifetime: false, rank: 2, rankText: 'Administrator', expires, daysLeft: 30, uid: 'DEMO1234' };
+      dtx.on('state', this.st);
+      dtx.on('keyResult', { ok: true, plan: 30, planText: '30 дней', lifetime: false, rank: 2, rankText: 'Administrator', expires, daysLeft: 30, uid: 'DEMO1234' });
+    }, 300); return Promise.resolve(); },
+    dtxLogin() { setTimeout(() => { this.st.account = { name: 'Dizzel', uuid: '069a79f444e94726a5befca90e38aaf5' }; dtx.on('state', this.st); dtx.on('toast', 'Добро пожаловать, Dizzel!'); }, 600); return Promise.resolve(); },
+    dtxOfflineLogin(name) { setTimeout(() => { this.st.account = { name: name, uuid: '00000000000000000000000000000000', offline: true }; dtx.on('state', this.st); dtx.on('toast', 'Вход без лицензии: ' + name); }, 300); return Promise.resolve(); },
+    dtxLogout() { this.st.account = null; dtx.on('state', this.st); return Promise.resolve(); },
+    dtxPlay() {
+      this.st.busy = true; dtx.on('state', this.st);
+      let f = 0; const steps = ['Скачиваю библиотеки', 'Скачиваю ресурсы игры', 'Скачиваю Java 21', 'Скачиваю моды', 'Запускаю Dettex...'];
+      const t = setInterval(() => { f += 0.013; const p = Math.min(1, f);
+        dtx.on('progress', { title: steps[Math.min(4, Math.floor(p * 5))], frac: p, doneBytes: p * 6.1e8, totalBytes: 6.1e8, speed: 2.4e7, doneFiles: Math.floor(p * 4211), totalFiles: 4211 });
+        if (p >= 1) { clearInterval(t); this.st.busy = false; dtx.on('state', this.st); dtx.on('toast', 'Демо: здесь бы запустилась игра'); } }, 60);
+      return Promise.resolve();
+    },
+    dtxUpdate() {
+      this.st.busy = true; dtx.on('state', this.st);
+      let f = 0; const steps = ['Проверяю файлы игры', 'Скачиваю библиотеки', 'Скачиваю ресурсы игры', 'Скачиваю моды', 'Обновляю Dettex...'];
+      const t = setInterval(() => { f += 0.02; const p = Math.min(1, f);
+        dtx.on('progress', { title: steps[Math.min(4, Math.floor(p * 5))], frac: p, doneBytes: p * 6.1e8, totalBytes: 6.1e8, speed: 2.4e7, doneFiles: Math.floor(p * 4211), totalFiles: 4211 });
+        if (p >= 1) { clearInterval(t); this.st.busy = false; this.st.installed = true; dtx.on('state', this.st); dtx.on('toast', 'Демо: клиент обновлён — нажми «Играть»'); } }, 60);
+      return Promise.resolve();
+    },
+    dtxCancel() { return Promise.resolve(); }, dtxSet(k, v) { this.st.settings[k] = v; return Promise.resolve(); },
+    dtxOpen() { return Promise.resolve(); }, dtxMinimize() { return Promise.resolve(); }, dtxClose() { return Promise.resolve(); }, dtxDrag() { return Promise.resolve(); },
+  };
+
+  let S = null;
+  let keyChecking = false;
+  let updating = false;
+  const gb = mb => (mb / 1024).toFixed(mb % 1024 ? 1 : 0).replace('.', ',') + ' ГБ';
+  const size = b => b > 1e9 ? (b / 1e9).toFixed(2) + ' ГБ' : b > 1e6 ? (b / 1e6).toFixed(1) + ' МБ' : Math.round(b / 1e3) + ' КБ';
+  const fmtDate = ts => new Date(ts * 1000).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  function render(st) {
+    S = st;
+    $('ver').textContent = 'v' + st.version;
+    $('mcTag').textContent = 'Minecraft ' + st.mc + ' · Fabric';
+    const acc = st.account;
+    $('accName').textContent = acc ? acc.name : 'Гость';
+    $('accMeta').innerHTML = acc
+      ? (acc.offline ? '<span class="off"></span>Оффлайн · без лицензии' : '<span class="ok"></span>Microsoft · лицензия')
+      : (st.loginBusy ? 'вхожу…' : 'не выполнен вход');
+    $('bLogout').classList.toggle('hidden', !acc);
+    $('loginBox').classList.toggle('hidden', !!acc);
+    $('loginLbl').textContent = st.loginBusy ? 'Проверяю аккаунт…' : 'Войти через Microsoft';
+    const av = $('avatar');
+    if (acc) {
+      if (acc.offline) {
+        // нет скина на серверах Mojang — показываем первую букву ника
+        av.dataset.uuid = '';
+        av.textContent = acc.name[0].toUpperCase();
+      } else if (av.dataset.uuid !== acc.uuid) {
+        av.dataset.uuid = acc.uuid;
+        av.textContent = acc.name[0].toUpperCase();
+        const img = new Image();
+        img.onload = () => { av.textContent = ''; av.appendChild(img); };
+        img.src = 'https://mc-heads.net/avatar/' + acc.uuid + '/104';
+      }
+    } else { av.dataset.uuid = ''; av.textContent = '?'; }
+    // licence: no valid key -> the blocking key dialog opens over everything
+    const lic = st.license;
+    const licOK = !!(lic && lic.active);
+    const chip = $('rankChip');
+    if (licOK) {
+      chip.className = 'rank rank-' + (lic.rank || 0);
+      chip.textContent = lic.rankText || 'Player';
+    } else {
+      chip.className = 'rank hidden';
+    }
+    if (lic) {
+      $('licLine').classList.remove('hidden');
+      $('licLine').classList.toggle('bad', !licOK);
+      $('licText').innerHTML = licOK
+        ? '<b>Ранг: ' + (lic.rankText || 'Player') + '</b> · Ключ: <b>' + lic.planText + (lic.lifetime ? '' : ' · до ' + fmtDate(lic.expires)) + '</b> · UID ' + lic.uid
+        : '<b>' + (lic.reason || 'ключ не активирован') + '</b>';
+    } else {
+      $('licLine').classList.add('hidden');
+    }
+    if (!licOK) {
+      if (!$('keyVeil').classList.contains('on')) {
+        $('keyText').innerHTML = lic
+          ? '<span style="color:#ff7a7a">' + (lic.reason || 'ключ не активен') + '</span>. Введи новый ключ <b>DTX-…</b> или <b>DETEX-…</b> из Telegram-бота <b>@Dettexclient_bot</b>.'
+          : 'Введи ключ <b>DTX-…</b> или <b>DETEX-…</b> из Telegram-бота <b>@Dettexclient_bot</b>, чтобы войти.';
+        $('keyVeil').classList.add('on');
+        setTimeout(() => $('keyInput').focus(), 80);
+      }
+    } else if ($('keyVeil').classList.contains('on') && !keyChecking) {
+      $('keyVeil').classList.remove('on');
+    }
+    $('bPlay').disabled = !acc || !licOK || st.busy || st.playing;
+    $('playLbl').textContent = st.playing ? 'В ИГРЕ' : st.busy ? 'ЗАГРУЗКА' : 'ИГРАТЬ';
+    if (!st.busy) updating = false;
+    $('bUpdate').disabled = st.busy || st.playing;
+    $('updateLbl').textContent = updating ? 'ОБНОВЛЯЮ…' : 'ОБНОВИТЬ';
+    $('prog').classList.toggle('on', !!st.busy);
+    $('ramShow').textContent = gb(st.settings.ramMB);
+    $('jarShow').textContent = st.jar ? '' : '⚠ клиент не встроен: собери лаунчер через pack-launcher.bat';
+    $('jarShow').style.color = '#ffb3c1';
+    // settings dialog
+    const r = $('ram');
+    const max = Math.max(2048, Math.min(32768, Math.floor((st.maxRam - 1536) / 512) * 512));
+    r.max = max; r.value = st.settings.ramMB; paintRam();
+    $('ramHint').textContent = 'Всего в ПК: ' + gb(st.maxRam) + '. Для Dettex хватает 4–6 ГБ; больше — не быстрее.';
+    document.querySelectorAll('[data-set]').forEach(b => b.classList.toggle('on', !!st.settings[b.dataset.set]));
+    if (document.activeElement !== $('server')) $('server').value = st.settings.server || '';
+  }
+  function paintRam() {
+    const r = $('ram');
+    r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%');
+    $('ramVal').textContent = gb(+r.value);
+  }
+
+  function toast(text) {
+    const t = document.createElement('div');
+    t.className = 'toast'; t.textContent = text;
+    $('toasts').appendChild(t);
+    setTimeout(() => { t.style.transition = 'opacity .4s'; t.style.opacity = 0; setTimeout(() => t.remove(), 400); }, 3200);
+  }
+
+  window.dtx = {
+    on(ev, p) {
+      if (ev === 'state') render(p);
+      else if (ev === 'toast') toast(p);
+      else if (ev === 'error') { $('errText').textContent = p; $('errVeil').classList.add('on'); }
+      else if (ev === 'progress') {
+        $('prog').classList.add('on');
+        const pct = Math.round((p.frac || 0) * 100);
+        $('pTitle').textContent = p.title; $('pPct').textContent = pct + '%';
+        $('pBar').style.width = pct + '%';
+        let meta = '';
+        if (p.totalBytes) meta = size(p.doneBytes) + ' из ' + size(p.totalBytes) + (p.speed ? ' · ' + size(p.speed) + '/с' : '');
+        else if (p.totalFiles) meta = p.doneFiles + ' из ' + p.totalFiles + ' файлов';
+        $('pMeta').textContent = meta || ' ';
+      } else if (ev === 'needKey') {
+        $('prog').classList.remove('on');
+        $('keyText').innerHTML = 'Получи ключ в Telegram-боте <b>@dettexclient_bot</b> и вставь его сюда: <b>DTX-…</b> или <b>DETEX-…</b>.';
+        $('keyVeil').classList.add('on'); setTimeout(() => $('keyInput').focus(), 50);
+      } else if (ev === 'keyResult') {
+        keyChecking = false;
+        if (p.ok) {
+          $('keyVeil').classList.remove('on');
+          const when = p.lifetime ? 'навсегда' : (p.planText || (p.plan + ' дн.')) + ', до ' + fmtDate(p.expires);
+          toast('Ключ принят: ранг ' + (p.rankText || 'Player') + ' · ' + when + ' · UID ' + p.uid);
+        } else {
+          $('keyText').innerHTML = '<span style="color:#ff7a7a">' + p.reason + '</span>';
+        }
+      } else if (ev === 'game') {
+        if (p.state === 'running') toast('Dettex запущен. Приятной игры!');
+      }
+    },
+  };
+
+  // ---------- wiring
+  $('drag').addEventListener('mousedown', e => { if (e.button === 0) api('dtxDrag')(); });
+  const fmtKey = v => {
+    let t = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let prefix = '';
+    if (t.startsWith('DETEX')) { prefix = 'DETEX'; t = t.slice(5); }
+    else if (t.startsWith('DTX')) { prefix = 'DTX'; t = t.slice(3); }
+    else if (t.length <= 5) return t;
+    else prefix = 'DTX';
+    t = t.slice(0, 16);
+    let out = prefix;
+    for (let i = 0; i < t.length; i += 4) out += '-' + t.slice(i, i + 4);
+    return out;
+  };
+  $('keyInput').addEventListener('input', e => { e.target.value = fmtKey(e.target.value); });
+  $('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); $('keyGo').click(); } });
+  $('keyGo').addEventListener('click', () => {
+    const k = $('keyInput').value.trim();
+    const c = k.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const valid = (c.startsWith('DTX') && c.length === 19) || (c.startsWith('DETEX') && (c.length === 17 || c.length === 21));
+    if (!valid) { $('keyText').innerHTML = '<span style="color:#ff7a7a">Ключ выглядит так: DTX-XXXX-XXXX-XXXX-XXXX или DETEX-XXXX-XXXX-XXXX-XXXX</span>'; return; }
+    $('keyText').textContent = 'Проверяю ключ...';
+    keyChecking = true;
+    api('dtxRedeemKey')(k);
+  });
+  $('keyBotBtn').addEventListener('click', () => api('dtxOpen')('bot'));
+  $('drag').addEventListener('dblclick', e => e.preventDefault());
+  $('bMin').onclick = () => api('dtxMinimize')();
+  $('bClose').onclick = () => api('dtxClose')();
+  $('bLogin').onclick = () => { if (!S || !S.loginBusy) api('dtxLogin')(); };
+  const offlineLogin = () => {
+    const n = $('nick').value.trim();
+    if (!n) { toast('Введи ник'); $('nick').focus(); return; }
+    api('dtxOfflineLogin')(n);
+  };
+  $('bOffline').onclick = offlineLogin;
+  $('nick').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); offlineLogin(); }
+  });
+  $('bLogout').onclick = () => api('dtxLogout')();
+  $('bPlay').onclick = () => { $('pTitle').textContent = 'Подготовка…'; $('pPct').textContent = '0%'; $('pBar').style.width = '0%'; api('dtxPlay')(); };
+  $('bUpdate').onclick = () => { updating = true; $('pTitle').textContent = 'Обновление…'; $('pPct').textContent = '0%'; $('pBar').style.width = '0%'; $('updateLbl').textContent = 'ОБНОВЛЯЮ…'; api('dtxUpdate')(); };
+  $('bCancel').onclick = () => api('dtxCancel')();
+  const openSettings = () => $('settingsVeil').classList.add('on');
+  $('bSettings').onclick = openSettings; $('bSettings2').onclick = openSettings;
+  document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => b.closest('.veil').classList.remove('on'));
+  document.querySelectorAll('.veil').forEach(v => v.addEventListener('mousedown', e => {
+    if (e.target !== v) return;
+    // the key dialog cannot be dismissed until a valid key is entered
+    if (v.id === 'keyVeil' && !(S && S.license && S.license.active)) return;
+    v.classList.remove('on');
+  }));
+  document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => api('dtxOpen')(b.dataset.open)));
+  document.querySelectorAll('[data-set]').forEach(b => b.onclick = () => {
+    const v = !b.classList.contains('on'); b.classList.toggle('on', v);
+    S.settings[b.dataset.set] = v; api('dtxSet')(b.dataset.set, v);
+  });
+  $('ram').addEventListener('input', paintRam);
+  $('ram').addEventListener('change', e => { S.settings.ramMB = +e.target.value; $('ramShow').textContent = gb(+e.target.value); api('dtxSet')('ramMB', +e.target.value); });
+  $('server').addEventListener('change', e => api('dtxSet')('server', e.target.value));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.veil.on').forEach(v => {
+        if (v.id === 'keyVeil' && !(S && S.license && S.license.active)) return;
+        v.classList.remove('on');
+      });
+    }
+    if (e.key === 'Enter' && !document.querySelector('.veil.on') && !$('bPlay').disabled) $('bPlay').click();
+  });
+  document.addEventListener('contextmenu', e => { if (!e.target.matches('input')) e.preventDefault(); });
+
+  // ---------- particles: light on the CPU (stops when the window is hidden)
+  const cv = $('fx'), cx = cv.getContext('2d');
+  let W = 0, H = 0, pts = [], mouse = { x: -999, y: -999 };
+  function resize() {
+    const d = Math.min(2, window.devicePixelRatio || 1);
+    W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0);
+    pts = Array.from({ length: Math.round(W * H / 14000) }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, r: Math.random() * 1.6 + .4, h: Math.random() }));
+  }
+  addEventListener('resize', resize); resize();
+  addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  function frame() {
+    if (!document.hidden) {
+      cx.clearRect(0, 0, W, H);
+      for (const p of pts) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < -10) p.x = W + 10; if (p.x > W + 10) p.x = -10; if (p.y < -10) p.y = H + 10; if (p.y > H + 10) p.y = -10;
+        const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+        if (d2 < 14000) { p.x += dx / 260; p.y += dy / 260; }
+        cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.283);
+        cx.fillStyle = p.h < .5 ? 'rgba(94,231,255,.55)' : 'rgba(180,140,255,.55)'; cx.fill();
+      }
+      cx.lineWidth = .6;
+      for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+        const a = pts[i], b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+        if (d2 < 9000) { cx.strokeStyle = 'rgba(150,140,255,' + (0.14 * (1 - d2 / 9000)) + ')'; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); cx.stroke(); }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const to = +el.dataset.count, t0 = performance.now();
+    const step = now => { const k = Math.min(1, (now - t0) / 1200), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(to * e) + (k >= 1 ? '+' : ''); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+
+  api('dtxState')().then(render);
+})();
+</script>
+</body>
+</html>

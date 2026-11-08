@@ -381,7 +381,7 @@ extends Module {
             if (this.donationPotionsUnderSelf.isValue() && this.isDonationPotionUnderSelf((KeyBind)bind)) {
                 this.queueDonationPotionUnderSelf(slot);
             } else {
-                this.useSlot(slot, AngleUtil.cameraAngle());
+                this.useSlotPacketDirect(slot, null);
             }
         });
     }

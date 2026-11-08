@@ -43,7 +43,7 @@ import ru.recoin.api.accessor.ContainerButtonHost;
 import ru.recoin.api.event.EventManager;
 import ru.recoin.implement.events.container.DrawSlotsEvent;
 import ru.recoin.implement.events.container.HandledScreenEvent;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 import ru.recoin.implement.features.modules.player.AutoBuy;
 import ru.recoin.implement.features.modules.render.UiAnimationManager;
 import ru.recoin.implement.screens.autobuy.AuctionControlOverlay;
@@ -101,7 +101,7 @@ implements ContainerButtonHost {
     @Inject(method={"method_71085"}, at={@At(value="INVOKE", target="Lnet/minecraft/class_465;method_64508(Lnet/minecraft/class_332;II)V")})
     private void recoin$beforeDrawSlots(class_332 context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         class_310 client = class_310.method_1551();
-        if (client.field_1724 != null && !SelfDestruct.isLocked()) {
+        if (client.field_1724 != null && !Unhook.isLocked()) {
             EventManager.callEvent(new DrawSlotsEvent(context, (class_465)(Object)this));
         }
     }
@@ -109,7 +109,7 @@ implements ContainerButtonHost {
     @Inject(method={"method_71085"}, at={@At(value="TAIL")})
     private void recoin$endCustomForeground(class_332 context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         class_310 client = class_310.method_1551();
-        if (client.field_1724 != null && !SelfDestruct.isLocked()) {
+        if (client.field_1724 != null && !Unhook.isLocked()) {
             HandledScreenAccessor accessor = (HandledScreenAccessor)((Object)this);
             class_1735 hoverSlot = accessor.recoin$getSlotAt(mouseX, mouseY);
             EventManager.callEvent(new HandledScreenEvent(context, hoverSlot, accessor.recoin$getBackgroundWidth(), accessor.recoin$getBackgroundHeight(), mouseX, mouseY));
@@ -119,7 +119,7 @@ implements ContainerButtonHost {
             this.recoin$foregroundAnimationTransform = false;
         }
         AutoBuy autoBuy = AutoBuy.getInstance();
-        if (client.field_1724 != null && !SelfDestruct.isLocked() && autoBuy != null && autoBuy.state && autoBuy.isAuctionScreen((class_465)(Object)this)) {
+        if (client.field_1724 != null && !Unhook.isLocked() && autoBuy != null && autoBuy.state && autoBuy.isAuctionScreen((class_465)(Object)this)) {
             AuctionControlOverlay.renderHistory(context, autoBuy, ((HandledScreenAccessor)((Object)this)).recoin$getX(), ((HandledScreenAccessor)((Object)this)).recoin$getY());
         }
     }
@@ -176,7 +176,7 @@ implements ContainerButtonHost {
         }
         class_465 screen = (class_465)(Object)this;
         HandledScreenAccessor accessor = (HandledScreenAccessor)((Object)this);
-        boolean bl = visible = !SelfDestruct.isLocked();
+        boolean bl = visible = !Unhook.isLocked();
         if ((Object)this instanceof class_490) {
             if (this.recoin$inventoryThrowButton != null) {
                 this.recoin$inventoryThrowButton.method_46421(Math.round((float)accessor.recoin$getX() + (float)(accessor.recoin$getBackgroundWidth() - 96) / 2.0f));

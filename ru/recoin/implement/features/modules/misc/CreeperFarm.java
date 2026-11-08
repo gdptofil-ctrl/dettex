@@ -84,7 +84,7 @@ extends Module {
     private long startedAt;
 
     public CreeperFarm() {
-        super("CreeperFarm", "Creeper Farm", ModuleCategory.MISC);
+        super("CreeperFarm", "Creeper Farm", ModuleCategory.PVE);
         this.setup(this.unloadGunpowder);
     }
 

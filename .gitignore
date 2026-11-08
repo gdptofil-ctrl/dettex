@@ -6,3 +6,12 @@ run/
 out/
 logs/
 *.log
+_to_delete/
+launcher/build/
+launcher/*.exe
+launcher/client.jar
+launcher/payload.jar
+DettexLauncher.exe
+src/main/resources/assets/recoin/license_pub.txt
+tg-bot/bot-token.txt
+sync-server/.env

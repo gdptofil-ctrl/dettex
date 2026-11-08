@@ -9,4 +9,22 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'RecoinDLC'
+// maven.fabricmc.net is only reachable through the local proxy on this machine.
+// If the proxy is down, Gradle reports the cryptic "fabric-loom was not found"
+// instead of a connection error, so fail early with an actionable message.
+// Skip with -PnoProxyCheck or --offline.
+def proxyHost = System.getProperty('https.proxyHost')
+def proxyPort = System.getProperty('https.proxyPort')
+if (!gradle.startParameter.offline && proxyHost && proxyPort && !gradle.startParameter.projectProperties.containsKey('noProxyCheck')) {
+    def socket = new Socket()
+    try {
+        socket.connect(new InetSocketAddress(proxyHost, proxyPort as int), 1500)
+    } catch (Exception ignored) {
+        throw new GradleException("Local proxy ${proxyHost}:${proxyPort} is not running. Start your VPN/proxy: " +
+                "without it Gradle cannot reach maven.fabricmc.net and reports fabric-loom as 'not found'.")
+    } finally {
+        socket.close()
+    }
+}
+
+rootProject.name = 'DettexClient'

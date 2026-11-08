@@ -1,182 +1,409 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.minecraft.class_11890
- *  net.minecraft.class_1657
- *  net.minecraft.class_310
- */
 package ru.recoin.implement.features.modules.render.cosmetics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.class_11890;
-import net.minecraft.class_1657;
+import net.minecraft.class_12079;
+import net.minecraft.class_2960;
 import net.minecraft.class_310;
-import ru.recoin.api.event.EventHandler;
 import ru.recoin.api.feature.module.Module;
 import ru.recoin.api.feature.module.ModuleCategory;
 import ru.recoin.api.feature.module.setting.implement.BooleanSetting;
 import ru.recoin.api.feature.module.setting.implement.GroupSetting;
 import ru.recoin.api.feature.module.setting.implement.SelectSetting;
+import ru.recoin.api.feature.module.setting.implement.TextSetting;
+import ru.recoin.api.feature.module.setting.implement.ValueSetting;
+import ru.recoin.api.event.EventHandler;
 import ru.recoin.api.repository.friend.FriendUtils;
 import ru.recoin.common.util.other.Instance;
-import ru.recoin.implement.events.player.TickEvent;
 import ru.recoin.implement.features.modules.render.cosmetics.loader.CosmeticLoader;
 import ru.recoin.implement.features.modules.render.cosmetics.model.CosmeticModel;
-import ru.recoin.implement.features.modules.render.custompet.CustomPetVariant;
-import ru.recoin.implement.features.modules.render.custompet.control.CustomPetFollowerController;
-import ru.recoin.implement.features.modules.render.custompet.entity.CustomPetEntity;
+import ru.recoin.implement.features.modules.render.cosmetics.sync.CosmeticSync;
+import ru.recoin.implement.events.player.TickEvent;
 
 public final class Cosmetics
 extends Module {
-    private static final String[] SWORD_WEAPONS;
-    private static final String[] MACE_WEAPONS;
-    private static final String[] PET_KINDS;
-    private static final String[] CROSSBOW_WEAPONS;
-    private static final String[] ROBOT_TYPES;
-    private static final String[] WINGS;
-    private static final String[] BACKPACKS;
-    public static final String SAHUR = "Sahur";
-    public static final String BEER = "Beer";
-    public static final String CRAZY_RABBIT = "CrazyRabbit";
-    private static final String[] CUSTOM_MODELS;
+    private static final String[] MACE_WEAPONS = new String[]{"Abominable Scythe", "Arcanethyst", "Bloody Death", "Crescent Rose", "Demigod's Unholy Blade", "Demigod's Unholy Halberd", "Demon Lord's Great Axe", "Divine Axe Rhitta", "Divine Reaper", "Icewhisper", "Magi Scythe", "Requiem of the Ninth Abyss", "Wraith Scythe", "Frost Axe", "Frost Scythe", "3D Mace", "Warhammer", "Toothed Macuahuitl", "Makeshift Macuahuitl", "Photon Axe", "Old World Axe"};
+    private static final String[] SWORD_WEAPONS = new String[]{"Katana", "Mineral Greatsword", "Kitsune Blade", "Kitsune Dagger", "Old World Sword", "Grass Blade", "Foam Sword", "Cardboard Sword", "Plank Sword", "Bayonet", "Sai", "Bamboo Stick"};
+    private static final String[] MACE_DISPLAY = Cosmetics.cleanDisplayNames(MACE_WEAPONS);
+    private static final String[] SWORD_DISPLAY = Cosmetics.cleanDisplayNames(SWORD_WEAPONS);
+    private static final String[] PLAYER_MODELS = CosmeticCatalog.names(CosmeticCatalog.PLAYER_MODELS);
+    private static final String[] WINGS = CosmeticCatalog.names(CosmeticCatalog.WINGS);
+    private static final String[] HATS = CosmeticCatalog.names(CosmeticCatalog.HATS);
+    private static final String[] BACKPACKS = CosmeticCatalog.names(CosmeticCatalog.BACKPACKS);
+    private static final String[] HALOS = CosmeticCatalog.names(CosmeticCatalog.HALOS);
+    private static final String[] CAPES = CosmeticCatalog.names(CosmeticCatalog.CAPES);
+    private static final Map<String, String> MACE_MAP = Cosmetics.originalNames(MACE_WEAPONS);
+    private static final Map<String, String> SWORD_MAP = Cosmetics.originalNames(SWORD_WEAPONS);
     private static Cosmetics instance;
-    private final BooleanSetting swordsEnabled = new BooleanSetting("\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u043c\u0435\u0447\u0438", "\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u0438 \u043c\u0435\u0447\u0435\u0439").setValue(false);
-    private final BooleanSetting swordsSelfOnly = new BooleanSetting("\u0422\u043e\u043b\u044c\u043a\u043e \u0441\u0432\u043e\u0439 \u043c\u0435\u0447", "\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u0443 \u0441\u0435\u0431\u044f").setValue(true);
-    private final SelectSetting swordModel = new SelectSetting("\u041c\u043e\u0434\u0435\u043b\u044c \u043c\u0435\u0447\u0430", "\u0412\u044b\u0431\u043e\u0440 \u043c\u043e\u0434\u0435\u043b\u0438 \u043c\u0435\u0447\u0430").value(Cosmetics.cleanDisplayNames(SWORD_WEAPONS)).selected(Cosmetics.cleanDisplayNames(SWORD_WEAPONS)[0]);
-    private final GroupSetting swordsGroup = new GroupSetting("\u041c\u0435\u0447\u0438", "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u0441\u043a\u0438\u043d\u044b \u043c\u0435\u0447\u0435\u0439", false).settings(this.swordsEnabled, this.swordsSelfOnly, this.swordModel);
-    private final SelectSetting maceModel = new SelectSetting("\u041c\u043e\u0434\u0435\u043b\u044c \u0431\u0443\u043b\u0430\u0432\u044b", "\u0412\u044b\u0431\u043e\u0440 \u043c\u043e\u0434\u0435\u043b\u0438 \u0431\u0443\u043b\u0430\u0432\u044b").value(Cosmetics.cleanDisplayNames(MACE_WEAPONS)).selected(Cosmetics.cleanDisplayNames(MACE_WEAPONS)[0]);
-    private final BooleanSetting macesEnabled = new BooleanSetting("\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0431\u0443\u043b\u0430\u0432\u044b", "\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u0438 \u0431\u0443\u043b\u0430\u0432").setValue(false);
-    private final BooleanSetting macesSelfOnly = new BooleanSetting("\u0422\u043e\u043b\u044c\u043a\u043e \u0441\u0432\u043e\u044f \u0431\u0443\u043b\u0430\u0432\u0430", "\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u0443 \u0441\u0435\u0431\u044f").setValue(true);
-    private final GroupSetting macesGroup = new GroupSetting("\u0411\u0443\u043b\u0430\u0432\u044b", "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u0441\u043a\u0438\u043d\u044b \u0431\u0443\u043b\u0430\u0432", false).settings(this.macesEnabled, this.macesSelfOnly, this.maceModel);
-    private final BooleanSetting crossbowsEnabled = new BooleanSetting("\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0430\u0440\u0431\u0430\u043b\u0435\u0442", "\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u044c \u0430\u0440\u0431\u0430\u043b\u0435\u0442\u0430").setValue(false);
-    private final BooleanSetting crossbowsSelfOnly = new BooleanSetting("\u0422\u043e\u043b\u044c\u043a\u043e \u0441\u0432\u043e\u0439 \u0430\u0440\u0431\u0430\u043b\u0435\u0442", "\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u0443 \u0441\u0435\u0431\u044f").setValue(true);
-    private final SelectSetting crossbowModel = new SelectSetting("\u041c\u043e\u0434\u0435\u043b\u044c \u0430\u0440\u0431\u0430\u043b\u0435\u0442\u0430", "\u0412\u044b\u0431\u043e\u0440 \u043c\u043e\u0434\u0435\u043b\u0438 \u0430\u0440\u0431\u0430\u043b\u0435\u0442\u0430").value(CROSSBOW_WEAPONS).selected(CROSSBOW_WEAPONS[0]);
-    private final GroupSetting crossbowsGroup = new GroupSetting("\u0410\u0440\u0431\u0430\u043b\u0435\u0442", "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u0441\u043a\u0438\u043d\u044b \u0430\u0440\u0431\u0430\u043b\u0435\u0442\u0430", false).settings(this.crossbowsEnabled, this.crossbowsSelfOnly, this.crossbowModel);
-    private final SelectSetting petKind = new SelectSetting("\u041f\u0438\u0442\u043e\u043c\u0435\u0446", "\u0422\u0438\u043f \u043f\u0438\u0442\u043e\u043c\u0446\u0430").value(PET_KINDS).selected(PET_KINDS[0]);
-    private final SelectSetting petVariant = new SelectSetting("\u0412\u0438\u0434 \u0436\u0430\u0431\u044b", "\u0412\u0430\u0440\u0438\u0430\u043d\u0442 \u0441\u043a\u0438\u043d\u0430 \u0436\u0430\u0431\u044b").value(CustomPetVariant.settingValues()).selected(CustomPetVariant.NITWIT.getSettingValue());
-    private final SelectSetting robotType = new SelectSetting("\u0422\u0438\u043f \u0440\u043e\u0431\u043e\u0442\u0430", "\u0412\u044b\u0431\u043e\u0440 \u0441\u043a\u0438\u043d\u0430 \u0440\u043e\u0431\u043e\u0442\u0430").value(ROBOT_TYPES).selected(ROBOT_TYPES[0]);
-    private final GroupSetting petsGroup = new GroupSetting("\u041f\u0438\u0442\u043e\u043c\u0446\u044b", "\u041a\u043e\u043c\u043f\u0430\u043d\u044c\u043e\u043d\u044b \u0438 \u043f\u0438\u0442\u043e\u043c\u0446\u044b").setValue(false).settings(this.petKind, this.petVariant, this.robotType);
-    private final SelectSetting wingModel = new SelectSetting("\u041c\u043e\u0434\u0435\u043b\u044c \u043a\u0440\u044b\u043b\u044c\u0435\u0432", "\u0412\u044b\u0431\u043e\u0440 \u043c\u043e\u0434\u0435\u043b\u0438 \u043a\u0440\u044b\u043b\u044c\u0435\u0432").value(WINGS).selected(WINGS[0]);
-    private final GroupSetting wingsGroup = new GroupSetting("\u041a\u0440\u044b\u043b\u044c\u044f", "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u043a\u0440\u044b\u043b\u044c\u044f").setValue(false).settings(this.wingModel);
-    private final SelectSetting backpackModel = new SelectSetting("\u041c\u043e\u0434\u0435\u043b\u044c \u0440\u044e\u043a\u0437\u0430\u043a\u0430", "\u0412\u044b\u0431\u043e\u0440 \u043c\u043e\u0434\u0435\u043b\u0438 \u0440\u044e\u043a\u0437\u0430\u043a\u0430").value(BACKPACKS).selected(BACKPACKS[0]);
-    private final GroupSetting backpacksGroup = new GroupSetting("\u0420\u044e\u043a\u0437\u0430\u043a\u0438", "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u0440\u044e\u043a\u0437\u0430\u043a\u0438").setValue(false).settings(this.backpackModel);
-    private final SelectSetting customModel = new SelectSetting("\u041c\u043e\u0434\u0435\u043b\u044c \u0438\u0433\u0440\u043e\u043a\u0430", "\u0412\u044b\u0431\u043e\u0440 \u043a\u0430\u0441\u0442\u043e\u043c\u043d\u043e\u0439 \u043c\u043e\u0434\u0435\u043b\u0438 \u0438\u0433\u0440\u043e\u043a\u0430").value(CUSTOM_MODELS).selected(CUSTOM_MODELS[0]);
-    private final BooleanSetting customModelFriends = new BooleanSetting("\u0414\u0440\u0443\u0437\u044c\u044f", "\u041e\u0442\u043e\u0431\u0440\u0430\u0436\u0430\u0442\u044c \u043a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u043c\u043e\u0434\u0435\u043b\u0438 \u043d\u0430 \u0434\u0440\u0443\u0437\u044c\u044f\u0445").setValue(true);
-    private final GroupSetting customModelsGroup = new GroupSetting("\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u043c\u043e\u0434\u0435\u043b\u0438", "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 3D \u043c\u043e\u0434\u0435\u043b\u0438 \u0438\u0433\u0440\u043e\u043a\u0430").setValue(false).settings(this.customModel, this.customModelFriends);
-    private final CustomPetFollowerController localPetController = new CustomPetFollowerController();
-    private static final Map<String, String> SWORD_MAP;
-    private static final Map<String, String> MACE_MAP;
-    private static final Map<String, CustomPetVariant> VARIANT_MAP;
-    private static final Map<String, Integer> ROBOT_MAP;
-    private static final Map<String, String> WING_FILE_MAP;
-    private static final Map<String, String> BACKPACK_FILE_MAP;
+
+    private final BooleanSetting macesEnabled = new BooleanSetting("Enable Maces", "Replace mace models").setValue(false);
+    private final BooleanSetting macesSelfOnly = new BooleanSetting("Own Mace Only", "Replace the model only for yourself").setValue(true);
+    private final SelectSetting maceModel = new SelectSetting("Mace Model", "Choose a mace model").value(MACE_DISPLAY).selected(MACE_DISPLAY[0]);
+    private final GroupSetting macesGroup = new GroupSetting("Maces", "Custom mace skins", false).settings(this.macesEnabled, this.macesSelfOnly, this.maceModel);
+
+    private final BooleanSetting swordsEnabled = new BooleanSetting("Enable Swords", "Replace sword models").setValue(false);
+    private final BooleanSetting swordsSelfOnly = new BooleanSetting("Own Sword Only", "Replace the model only for yourself").setValue(true);
+    private final SelectSetting swordModel = new SelectSetting("Sword Model", "Choose a sword model").value(SWORD_DISPLAY).selected(SWORD_DISPLAY[0]);
+    private final GroupSetting swordsGroup = new GroupSetting("Swords", "Custom sword skins", false).settings(this.swordsEnabled, this.swordsSelfOnly, this.swordModel);
+
+    private final SelectSetting playerModel = new SelectSetting("Player Model", "Choose a player model").value(PLAYER_MODELS).selected(PLAYER_MODELS[0]);
+    private final BooleanSetting playerModelFriends = new BooleanSetting("Models On Friends", "Show the model on friends too").setValue(true);
+    private final GroupSetting playerModelsGroup = new GroupSetting("Player Models", "Replace the player model").setValue(false).settings(this.playerModel, this.playerModelFriends);
+
+    private final SelectSetting wingModel = new SelectSetting("Wings Model", "Choose wings").value(WINGS).selected(WINGS[0]);
+    private final GroupSetting wingsGroup = new GroupSetting("Wings", "Wings on your back").setValue(false).settings(this.wingModel);
+
+    private final SelectSetting hatModel = new SelectSetting("Hat Model", "Choose a hat").value(HATS).selected(HATS[0]);
+    private final GroupSetting hatsGroup = new GroupSetting("Hats", "Hats and head accessories").setValue(false).settings(this.hatModel);
+
+    private final SelectSetting backpackModel = new SelectSetting("Backpack Model", "Choose a backpack").value(BACKPACKS).selected(BACKPACKS[0]);
+    private final GroupSetting backpacksGroup = new GroupSetting("Backpacks", "Backpack on your back").setValue(false).settings(this.backpackModel);
+
+    private final SelectSetting haloModel = new SelectSetting("Halo Model", "Choose a halo").value(HALOS).selected(HALOS[0]);
+    private final GroupSetting halosGroup = new GroupSetting("Halos", "Halo above your head").setValue(false).settings(this.haloModel);
+
+    private final SelectSetting capeModel = new SelectSetting("Cape Model", "Choose a cape").value(CAPES).selected(CAPES[0]);
+    private final BooleanSetting capeFriends = new BooleanSetting("Capes On Friends", "Show the cape on friends too").setValue(true);
+    private final GroupSetting capesGroup = new GroupSetting("Capes", "Cape and elytra").setValue(false).settings(this.capeModel, this.capeFriends);
+
+    private final BooleanSetting accessoriesFriends = new BooleanSetting("Accessories On Friends", "Wings, hats, backpacks and halos on friends too").setValue(false);
+    private final ValueSetting renderDistance = new ValueSetting("Cosmetics Distance", "Skip cosmetics farther than this many blocks (saves FPS)").setValue(48.0f).range(8, 128);
+    private final GroupSetting generalGroup = new GroupSetting("General", "General cosmetics settings", false).settings(this.accessoriesFriends, this.renderDistance);
+
+    /** Address of the cosmetics sync server (see sync-server/README.md). Empty = sync off. */
+    public static final String DEFAULT_SYNC_SERVER = "";
+    private final BooleanSetting syncShare = new BooleanSetting("Share My Cosmetics", "Other Dettex users see your cosmetics").setValue(true);
+    private final BooleanSetting syncShow = new BooleanSetting("Show Dettex Users", "See the cosmetics of other Dettex users").setValue(true);
+    private final BooleanSetting syncBadge = new BooleanSetting("Dettex Badge", "Dettex logo next to the names of Dettex users").setValue(true);
+    private final TextSetting syncServer = new TextSetting("Sync Server", "Address of the cosmetics sync server").setText(DEFAULT_SYNC_SERVER);
+    private final GroupSetting syncGroup = new GroupSetting("Sync", "Cosmetics shared between Dettex users", false).settings(this.syncShare, this.syncShow, this.syncBadge, this.syncServer);
+
     private final Map<String, CosmeticModel> cachedModels = new ConcurrentHashMap<String, CosmeticModel>();
+    private final Map<String, class_12079.class_10726> capeAssets = new ConcurrentHashMap<String, class_12079.class_10726>();
 
     public Cosmetics() {
         super("Cosmetics", "Cosmetics", ModuleCategory.RENDER);
         instance = this;
-        this.setup(this.swordsGroup, this.macesGroup, this.crossbowsGroup, this.petsGroup, this.wingsGroup, this.backpacksGroup, this.customModelsGroup);
+        this.setup(this.macesGroup, this.swordsGroup, this.playerModelsGroup, this.wingsGroup, this.hatsGroup, this.backpacksGroup, this.halosGroup, this.capesGroup, this.generalGroup, this.syncGroup);
     }
 
     public static Cosmetics getInstance() {
         return Instance.get(Cosmetics.class);
     }
 
-    public boolean isCustomModelsActive() {
-        return this.isState() && this.customModelsGroup.isValue();
-    }
+    // ------------------------------------------------------------------ sync between Dettex users
 
-    public String getActiveCustomModel() {
-        return this.customModel.getSelected();
-    }
-
-    public boolean shouldApplyCustomModel(class_11890 player) {
-        boolean localPlayer;
-        if (!this.isCustomModelsActive() || player == null || player.method_7325()) {
-            return false;
-        }
-        class_310 client = class_310.method_1551();
-        boolean bl = localPlayer = client != null && client.field_1724 != null && player == client.field_1724;
-        if (localPlayer) {
-            return true;
-        }
-        return this.customModelFriends.isValue() && player.method_5477() != null && FriendUtils.isFriend(player.method_5477().getString());
+    @EventHandler
+    public void onTick(TickEvent event) {
+        CosmeticSync.tick(this.syncServer.getText(), this.syncShare.isValue(), this.ownProfile());
     }
 
     @Override
     public void deactivate() {
-        this.localPetController.reset();
+        CosmeticSync.reset();
+        super.deactivate();
     }
 
-    @EventHandler
-    public void onTick(TickEvent event) {
-        if (!this.isState()) {
-            return;
-        }
-        if (Cosmetics.mc.field_1724 == null || Cosmetics.mc.field_1687 == null) {
-            this.localPetController.reset();
-            return;
-        }
-        if (this.petsGroup.isValue()) {
-            try {
-                CustomPetVariant variant = this.getSelectedPetVariant();
-                boolean isOwl = "\u0421\u043e\u0432\u0430".equals(this.petKind.getSelected());
-                this.localPetController.tick((class_1657)Cosmetics.mc.field_1724, variant, isOwl);
-                CustomPetEntity pet = this.localPetController.getPet();
-                if (pet != null) {
-                    pet.setRobotType(this.getSelectedRobotType());
-                }
-            }
-            catch (Throwable throwable) {}
-        } else {
-            this.localPetController.reset();
-        }
+    /** What this client shares: only the slots that are switched on. */
+    public CosmeticSync.Profile ownProfile() {
+        return new CosmeticSync.Profile(
+                this.playerModelsGroup.isValue() ? this.getActiveCustomModel() : null,
+                this.wingsGroup.isValue() ? this.wingModel.getSelected() : null,
+                this.hatsGroup.isValue() ? this.hatModel.getSelected() : null,
+                this.backpacksGroup.isValue() ? this.backpackModel.getSelected() : null,
+                this.halosGroup.isValue() ? this.haloModel.getSelected() : null,
+                this.capesGroup.isValue() ? this.capeModel.getSelected() : null,
+                this.macesEnabled.isValue() ? this.maceModel.getSelected() : null,
+                this.swordsEnabled.isValue() ? this.swordModel.getSelected() : null);
     }
+
+    /** Synced profile of another Dettex user, or null. */
+    private CosmeticSync.Profile remote(UUID uuid) {
+        return this.syncShow.isValue() ? CosmeticSync.get(uuid) : null;
+    }
+
+    /** Whether the Dettex badge goes next to this player's name. */
+    public boolean showBadge(UUID uuid) {
+        return this.isState() && this.syncBadge.isValue() && CosmeticSync.isDettexUser(uuid);
+    }
+
+    private static boolean contains(String[] values, String value) {
+        if (value == null) {
+            return false;
+        }
+        for (String v : values) {
+            if (v.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------ weapons
 
     public String getActualSword() {
-        String selected = this.swordModel.getSelected();
-        if (selected == null) {
-            return "";
-        }
-        String original = SWORD_MAP.get(selected);
-        if (original == null) {
-            original = SWORD_MAP.get(selected.toLowerCase(Locale.ROOT));
-        }
-        return original != null ? original : selected;
+        return Cosmetics.original(SWORD_MAP, this.swordModel.getSelected());
     }
 
     public String getActualMace() {
-        String selected = this.maceModel.getSelected();
+        return Cosmetics.original(MACE_MAP, this.maceModel.getSelected());
+    }
+
+    /** Weapon skin for a mace/sword held by this owner, or null to keep the vanilla model. */
+    public String weaponFor(boolean mace, UUID owner, boolean self) {
+        if (!this.isState()) {
+            return null;
+        }
+        BooleanSetting enabled = mace ? this.macesEnabled : this.swordsEnabled;
+        BooleanSetting selfOnly = mace ? this.macesSelfOnly : this.swordsSelfOnly;
+        if (self) {
+            return enabled.isValue() ? (mace ? this.getActualMace() : this.getActualSword()) : null;
+        }
+        CosmeticSync.Profile r = this.remote(owner);
+        String synced = r == null ? null : (mace ? r.mace() : r.sword());
+        if (synced != null) {
+            Map<String, String> map = mace ? MACE_MAP : SWORD_MAP;
+            String original = map.get(synced);
+            if (original != null) {
+                return original;
+            }
+        }
+        if (enabled.isValue() && !selfOnly.isValue()) {
+            return mace ? this.getActualMace() : this.getActualSword();
+        }
+        return null;
+    }
+
+    // ------------------------------------------------------------------ player models
+
+    public boolean isCustomModelsActive() {
+        return this.isState() && this.playerModelsGroup.isValue();
+    }
+
+    public String getActiveCustomModel() {
+        return this.validSelected(this.playerModel, PLAYER_MODELS);
+    }
+
+    /** Player model to draw for this player (self, synced Dettex user, or friend), or null for the vanilla model. */
+    public String customModelFor(class_11890 player) {
+        if (!this.isState() || player == null || player.method_7325()) {
+            return null;
+        }
+        class_310 client = class_310.method_1551();
+        if (client != null && client.field_1724 != null && player == client.field_1724) {
+            return this.playerModelsGroup.isValue() ? this.getActiveCustomModel() : null;
+        }
+        CosmeticSync.Profile r = this.remote(player.method_5667());
+        if (r != null) {
+            return Cosmetics.contains(PLAYER_MODELS, r.model()) ? r.model() : null;
+        }
+        return this.shouldApplyCustomModel(player) ? this.getActiveCustomModel() : null;
+    }
+
+    public boolean shouldApplyCustomModel(class_11890 player) {
+        if (!this.isCustomModelsActive() || player == null || player.method_7325()) {
+            return false;
+        }
+        class_310 client = class_310.method_1551();
+        if (client != null && client.field_1724 != null && player == client.field_1724) {
+            return true;
+        }
+        return this.playerModelFriends.isValue() && player.method_5477() != null && FriendUtils.isFriend(player.method_5477().getString());
+    }
+
+    // ------------------------------------------------------------------ accessories (wings, hats, backpacks, halos)
+
+    /** Whether accessories should be drawn for a player (self, or a friend when enabled) at this squared distance. */
+    public boolean shouldRenderAccessories(boolean self, String playerName, double squaredDistance) {
+        if (!this.isState()) {
+            return false;
+        }
+        double max = this.renderDistance.getValue();
+        if (!self && squaredDistance > max * max) {
+            return false;
+        }
+        return self || this.accessoriesFriends.isValue() && playerName != null && FriendUtils.isFriend(playerName);
+    }
+
+    /** Accessories for one player: own selection for self/friends, the synced selection for Dettex users. */
+    public List<CosmeticModel> accessoriesFor(boolean self, UUID uuid, String playerName, double squaredDistance) {
+        if (!this.isState()) {
+            return List.of();
+        }
+        double max = this.renderDistance.getValue();
+        if (!self && squaredDistance > max * max) {
+            return List.of();
+        }
+        if (self) {
+            return this.getActiveAccessories();
+        }
+        CosmeticSync.Profile r = this.remote(uuid);
+        if (r != null) {
+            ArrayList<CosmeticModel> list = new ArrayList<CosmeticModel>(4);
+            this.addExact(list, CosmeticCatalog.WINGS, r.wings());
+            this.addExact(list, CosmeticCatalog.BACKPACKS, r.backpack());
+            this.addExact(list, CosmeticCatalog.HATS, r.hat());
+            this.addExact(list, CosmeticCatalog.HALOS, r.halo());
+            return list;
+        }
+        return this.shouldRenderAccessories(false, playerName, squaredDistance) ? this.getActiveAccessories() : List.of();
+    }
+
+    /** True when this model is one of the catalog hats. */
+    public static boolean isHatModel(CosmeticModel model) {
+        return model != null && model.getName() != null && CosmeticCatalog.find(CosmeticCatalog.HATS, model.getName()) != null;
+    }
+
+    /** A hat by its catalog name (used for holiday hats), or null. */
+    public CosmeticModel hatModel(String name) {
+        return name == null || CosmeticCatalog.find(CosmeticCatalog.HATS, name) == null ? null : this.load(CosmeticCatalog.HATS, name);
+    }
+
+    private void addExact(List<CosmeticModel> out, String category, String name) {
+        if (name == null || CosmeticCatalog.find(category, name) == null) {
+            return;   // unknown name (other client version): skip instead of falling back to the first entry
+        }
+        CosmeticModel model = this.load(category, name);
+        if (model != null) {
+            out.add(model);
+        }
+    }
+
+    public List<CosmeticModel> getActiveAccessories() {
+        ArrayList<CosmeticModel> list = new ArrayList<CosmeticModel>(4);
+        this.addActive(list, this.wingsGroup, this.wingModel, CosmeticCatalog.WINGS);
+        this.addActive(list, this.backpacksGroup, this.backpackModel, CosmeticCatalog.BACKPACKS);
+        this.addActive(list, this.hatsGroup, this.hatModel, CosmeticCatalog.HATS);
+        this.addActive(list, this.halosGroup, this.haloModel, CosmeticCatalog.HALOS);
+        return list;
+    }
+
+    public CosmeticModel getActiveWingModel() {
+        return this.wingsGroup.isValue() ? this.load(CosmeticCatalog.WINGS, this.wingModel.getSelected()) : null;
+    }
+
+    public CosmeticModel getActiveBackpackModel() {
+        return this.backpacksGroup.isValue() ? this.load(CosmeticCatalog.BACKPACKS, this.backpackModel.getSelected()) : null;
+    }
+
+    private void addActive(List<CosmeticModel> out, GroupSetting group, SelectSetting select, String category) {
+        if (!group.isValue()) {
+            return;
+        }
+        CosmeticModel model = this.load(category, select.getSelected());
+        if (model != null) {
+            out.add(model);
+        }
+    }
+
+    private CosmeticModel load(String category, String name) {
+        CosmeticCatalog.Entry entry = CosmeticCatalog.find(category, name);
+        if (entry == null) {
+            List<CosmeticCatalog.Entry> all = CosmeticCatalog.entries(category);
+            if (all.isEmpty()) {
+                return null;
+            }
+            entry = all.get(0);
+        }
+        String path = entry.resourcePath();
+        if (path == null) {
+            return null;
+        }
+        CosmeticModel cached = this.cachedModels.get(path);
+        if (cached != null) {
+            return cached;
+        }
+        CosmeticModel model = CosmeticLoader.getInstance().loadFromResource(path);
+        if (model != null) {
+            this.cachedModels.put(path, model);
+        }
+        return model;
+    }
+
+    // ------------------------------------------------------------------ capes
+
+    /** Cape for this player, including the synced cape of a Dettex user; null keeps the vanilla cape. */
+    public class_12079.class_10726 getCapeFor(boolean self, UUID uuid, String playerName) {
+        if (!self && this.isState()) {
+            CosmeticSync.Profile r = this.remote(uuid);
+            if (r != null) {
+                CosmeticCatalog.Entry entry = r.cape() == null ? null : CosmeticCatalog.find(CosmeticCatalog.CAPES, r.cape());
+                if (entry == null || entry.texture() == null) {
+                    return null;
+                }
+                return this.capeAssets.computeIfAbsent(entry.texture(), texture -> new class_12079.class_10726(class_2960.method_60654((String)texture)));
+            }
+        }
+        return this.getCapeFor(self, playerName);
+    }
+
+    /** Selected cape for this player, or null when the vanilla cape should stay. */
+    public class_12079.class_10726 getCapeFor(boolean self, String playerName) {
+        if (!this.isState() || !this.capesGroup.isValue()) {
+            return null;
+        }
+        if (!self && !(this.capeFriends.isValue() && playerName != null && FriendUtils.isFriend(playerName))) {
+            return null;
+        }
+        CosmeticCatalog.Entry entry = CosmeticCatalog.find(CosmeticCatalog.CAPES, this.capeModel.getSelected());
+        if (entry == null || entry.texture() == null) {
+            return null;
+        }
+        return this.capeAssets.computeIfAbsent(entry.texture(), texture -> new class_12079.class_10726(class_2960.method_60654((String)texture)));
+    }
+
+    /** True for capes shipped with the client (drawn by the wavy cape renderer). Accepts an asset id or a texture path. */
+    public static boolean isClientCape(class_2960 id) {
+        return id != null && "minecraft".equals(id.method_12836()) && id.method_12832().contains("capes/recoin");
+    }
+
+    /** Full texture identifier (textures/....png) for a cape asset id or texture path. */
+    public static class_2960 capeTexture(class_2960 id) {
+        String path = id.method_12832();
+        if (path.startsWith("textures/")) {
+            return id;
+        }
+        return class_2960.method_60655((String)id.method_12836(), (String)("textures/" + path + ".png"));
+    }
+
+    // ------------------------------------------------------------------ helpers
+
+    private String validSelected(SelectSetting setting, String[] values) {
+        String selected = setting.getSelected();
+        for (String value : values) {
+            if (value.equals(selected)) {
+                return value;
+            }
+        }
+        return values[0];
+    }
+
+    private static String original(Map<String, String> map, String selected) {
         if (selected == null) {
             return "";
         }
-        String original = MACE_MAP.get(selected);
+        String original = map.get(selected);
         if (original == null) {
-            original = MACE_MAP.get(selected.toLowerCase(Locale.ROOT));
+            original = map.get(selected.toLowerCase(Locale.ROOT));
         }
         return original != null ? original : selected;
     }
 
-    private CustomPetVariant getSelectedPetVariant() {
-        String name = this.petVariant.getSelected();
-        if (name == null) {
-            return CustomPetVariant.NITWIT;
+    private static Map<String, String> originalNames(String[] names) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        for (String name : names) {
+            String display = name.replace("'", "");
+            map.put(display, name);
+            map.put(name, name);
+            map.put(display.toLowerCase(Locale.ROOT), name);
         }
-        CustomPetVariant v = VARIANT_MAP.get(name.toLowerCase());
-        return v != null ? v : CustomPetVariant.NITWIT;
-    }
-
-    private int getSelectedRobotType() {
-        String sel = this.robotType.getSelected();
-        if (sel == null) {
-            return 1;
-        }
-        Integer val = ROBOT_MAP.get(sel.toLowerCase());
-        return val != null ? val : 1;
+        return map;
     }
 
     private static String[] cleanDisplayNames(String[] original) {
@@ -187,33 +414,7 @@ extends Module {
         return res;
     }
 
-    public CosmeticModel getActiveWingModel() {
-        String sel = this.wingModel.getSelected();
-        if (sel == null) {
-            return null;
-        }
-        String fileName = WING_FILE_MAP.get(sel.toLowerCase());
-        if (fileName == null) {
-            return null;
-        }
-        return this.getOrLoadCosmetic(fileName);
-    }
-
-    public CosmeticModel getActiveBackpackModel() {
-        String sel = this.backpackModel.getSelected();
-        if (sel == null) {
-            return null;
-        }
-        String fileName = BACKPACK_FILE_MAP.get(sel.toLowerCase());
-        if (fileName == null) {
-            return null;
-        }
-        return this.getOrLoadCosmetic(fileName);
-    }
-
-    private CosmeticModel getOrLoadCosmetic(String fileName) {
-        return this.cachedModels.computeIfAbsent(fileName, f -> CosmeticLoader.getInstance().loadFromResource("/assets/recoin/cosmetics/models/" + f));
-    }
+    // ------------------------------------------------------------------ getters used by mixins and the menu
 
     public BooleanSetting getSwordsEnabled() {
         return this.swordsEnabled;
@@ -247,130 +448,44 @@ extends Module {
         return this.macesGroup;
     }
 
-    public BooleanSetting getCrossbowsEnabled() {
-        return this.crossbowsEnabled;
+    public SelectSetting getCustomModel() {
+        return this.playerModel;
     }
 
-    public BooleanSetting getCrossbowsSelfOnly() {
-        return this.crossbowsSelfOnly;
+    public GroupSetting getCustomModelsGroup() {
+        return this.playerModelsGroup;
     }
 
-    public SelectSetting getCrossbowModel() {
-        return this.crossbowModel;
+    /** Sync server address as typed in the settings (may be empty). */
+    public String getSyncServer() {
+        return this.syncServer.getText();
     }
 
-    public GroupSetting getCrossbowsGroup() {
-        return this.crossbowsGroup;
-    }
-
-    public SelectSetting getPetKind() {
-        return this.petKind;
-    }
-
-    public SelectSetting getPetVariant() {
-        return this.petVariant;
-    }
-
-    public SelectSetting getRobotType() {
-        return this.robotType;
-    }
-
-    public GroupSetting getPetsGroup() {
-        return this.petsGroup;
-    }
-
-    public SelectSetting getWingModel() {
-        return this.wingModel;
+    public GroupSetting getSyncGroup() {
+        return this.syncGroup;
     }
 
     public GroupSetting getWingsGroup() {
         return this.wingsGroup;
     }
 
-    public SelectSetting getBackpackModel() {
-        return this.backpackModel;
-    }
-
     public GroupSetting getBackpacksGroup() {
         return this.backpacksGroup;
     }
 
-    public SelectSetting getCustomModel() {
-        return this.customModel;
+    public GroupSetting getHatsGroup() {
+        return this.hatsGroup;
     }
 
-    public BooleanSetting getCustomModelFriends() {
-        return this.customModelFriends;
+    public GroupSetting getHalosGroup() {
+        return this.halosGroup;
     }
 
-    public GroupSetting getCustomModelsGroup() {
-        return this.customModelsGroup;
-    }
-
-    public CustomPetFollowerController getLocalPetController() {
-        return this.localPetController;
+    public GroupSetting getCapesGroup() {
+        return this.capesGroup;
     }
 
     public Map<String, CosmeticModel> getCachedModels() {
         return this.cachedModels;
     }
-
-    /*
-     * WARNING - void declaration
-     */
-    static {
-        int var0_4 = 0;
-        String displayName;
-        SWORD_WEAPONS = new String[]{"Abominable Blade", "Abominable Great Saber", "Acidic Cleaver", "Amethyst Shuriken", "Ancient Royal Great Sword", "Aquatic Sacred Blade", "Ashura's Blade", "Awakened Lichblade", "Blood Edge", "Bramblethorn", "Brimstone Claymore", "Carian Knight's Sword", "Chrono Blade", "Corrupted Mythic Blade", "Creation Splitter", "Cyber Katana", "Cyber Mantis Blade", "Cyber Sword", "Cybernetic Chainsaw Blade", "Cybernetic Katana", "Cybernetic Knife", "Dainsleif", "Dark Blade", "Dark Cleaver", "Death Knight's Dagger", "Death Knight's Sword", "Demon Lord's Sword", "Demonic Blade", "Demonic Cleaver", "Divine Justice", "Divine Punisher", "Dragon Slaying blade", "Edge Of The Astral Plane", "Emberblade", "Enigma", "Epic Sword", "Estoc", "Fallen God's Spear", "Fallen God's Sword", "Floral Longsword", "Floral Sabre", "Forest Guardian's Glaive", "Frost Blade", "Hearthflame", "Hero Sword", "Holy Moonlight Sword", "Hornet's Needle", "Jade Halberd", "Katana", "Legendary Sword", "Longsword", "Masamune", "Mjolnir", "Molten Blade", "Molten Sword", "Muramasa", "Mystical Spellblade", "Mythic Blade", "Ocean's Rage", "Partisan", "Pharaoh's Treasure", "Pheonix Grace", "Plague Longsword", "Power Fuse Hammer", "Power Fuse Sword", "Ribbon Cleaver", "Righteous Relic", "Rivers Of Blood", "Royal Chakram", "Royal Rapier", "Sabre", "Scissor Blade", "Sculk Cleaver", "Sculk Scythe", "Sculk Sword", "Sentinel's Will", "Silverine Blade", "Soul Claws", "Soul Collector", "Soul Devourer", "Soul Edge", "Soul Harvester", "Soul Stealer", "Soulrender", "Star's Edge", "Steel Sword", "Stop Sign", "Storm Bringer", "Storm's Edge", "Sunbreak", "Tengen's Blade", "Terra Blade", "Thousand Demon Daggers", "Thunder Bringer", "Thunderbrand", "True Excalibur", "Vampiric Needle", "Wakizashi", "Watcher Claymore", "Watching Warglaive", "Waxweaver", "Whisperwind", "Wickpiercer", "Yoru"};
-        MACE_WEAPONS = new String[]{"Abominable Scythe", "Arcanethyst", "Bloody Death", "Crescent Rose", "Demigod's Unholy Blade", "Demigod's Unholy Halberd", "Demon Lord's Great Axe", "Divine Axe Rhitta", "Divine Reaper", "Icewhisper", "Magi Scythe", "Requiem of the Ninth Abyss", "Wraith Scythe"};
-        PET_KINDS = new String[]{"\u0416\u0430\u0431\u0430", "\u0420\u043e\u0431\u043e\u0442", "\u0421\u043e\u0432\u0430", "\u0427\u0435\u043a\u0443\u0448\u043a\u0430", "\u041a\u043e\u0437\u043b\u0438\u043a"};
-        CROSSBOW_WEAPONS = new String[]{"\u041a\u0430\u043b\u0430\u0448", "AWP", "\u0420\u041f\u0413"};
-        ROBOT_TYPES = new String[]{"\u0420\u043e\u0431\u043e\u0442 1", "\u0420\u043e\u0431\u043e\u0442 2", "\u0420\u043e\u0431\u043e\u0442 3", "\u0420\u043e\u0431\u043e\u0442 4"};
-        WINGS = new String[]{"\u041a\u0440\u044b\u043b\u044c\u044f \u0430\u043d\u0433\u0435\u043b\u0430", "\u041a\u0440\u044b\u043b\u044c\u044f \u0432\u0443\u043b\u043a\u0430\u043d\u0430", "\u041a\u0440\u044b\u043b\u044c\u044f \u0434\u0440\u0430\u043a\u043e\u043d\u0447\u0438\u043a\u0430"};
-        BACKPACKS = new String[]{"Frog Backpack", "Backpack 1", "Backpack 2", "Backpack 3", "Backpack 4", "Backpack 5", "Backpack 6", "Backpack 7", "Backpack 8", "Backpack 9"};
-        CUSTOM_MODELS = new String[]{SAHUR, BEER, CRAZY_RABBIT};
-        SWORD_MAP = new HashMap<String, String>();
-        MACE_MAP = new HashMap<String, String>();
-        VARIANT_MAP = new HashMap<String, CustomPetVariant>();
-        ROBOT_MAP = new HashMap<String, Integer>();
-        for (String string : SWORD_WEAPONS) {
-            displayName = string.replace("'", "");
-            SWORD_MAP.put(displayName, string);
-            SWORD_MAP.put(string, string);
-            SWORD_MAP.put(displayName.toLowerCase(Locale.ROOT), string);
-        }
-        for (String string : MACE_WEAPONS) {
-            displayName = string.replace("'", "");
-            MACE_MAP.put(displayName, string);
-            MACE_MAP.put(string, string);
-            MACE_MAP.put(displayName.toLowerCase(Locale.ROOT), string);
-        }
-        for (CustomPetVariant customPetVariant : CustomPetVariant.values()) {
-            VARIANT_MAP.put(customPetVariant.getSettingValue().toLowerCase(), customPetVariant);
-        }
-        boolean bl = false;
-        while (var0_4 < ROBOT_TYPES.length) {
-            ROBOT_MAP.put(ROBOT_TYPES[var0_4].toLowerCase(), (int)(var0_4 + 1));
-            ++var0_4;
-        }
-        WING_FILE_MAP = new HashMap<String, String>();
-        BACKPACK_FILE_MAP = new HashMap<String, String>();
-        WING_FILE_MAP.put("\u043a\u0440\u044b\u043b\u044c\u044f \u0430\u043d\u0433\u0435\u043b\u0430", "cosmetic_22.json");
-        WING_FILE_MAP.put("\u043a\u0440\u044b\u043b\u044c\u044f \u0432\u0443\u043b\u043a\u0430\u043d\u0430", "cosmetic_26.json");
-        WING_FILE_MAP.put("\u043a\u0440\u044b\u043b\u044c\u044f \u0434\u0440\u0430\u043a\u043e\u043d\u0447\u0438\u043a\u0430", "cosmetic_23.json");
-        WING_FILE_MAP.put("angel wings", "cosmetic_22.json");
-        WING_FILE_MAP.put("vulcano wings", "cosmetic_26.json");
-        WING_FILE_MAP.put("baby dragon wings", "cosmetic_23.json");
-        BACKPACK_FILE_MAP.put("frog backpack", "cosmetic_28.json");
-        BACKPACK_FILE_MAP.put("backpack 1", "cosmetic_37.json");
-        BACKPACK_FILE_MAP.put("backpack 2", "cosmetic_36.json");
-        BACKPACK_FILE_MAP.put("backpack 3", "cosmetic_35.json");
-        BACKPACK_FILE_MAP.put("backpack 4", "cosmetic_33.json");
-        BACKPACK_FILE_MAP.put("backpack 5", "cosmetic_29.json");
-        BACKPACK_FILE_MAP.put("backpack 6", "cosmetic_30.json");
-        BACKPACK_FILE_MAP.put("backpack 7", "cosmetic_31.json");
-        BACKPACK_FILE_MAP.put("backpack 8", "cosmetic_32.json");
-        BACKPACK_FILE_MAP.put("backpack 9", "cosmetic_34.json");
-    }
 }
-

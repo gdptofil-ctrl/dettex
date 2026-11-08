@@ -34,7 +34,8 @@ import ru.recoin.implement.events.keyboard.HotBarScrollEvent;
 import ru.recoin.implement.events.keyboard.KeyEvent;
 import ru.recoin.implement.events.keyboard.MouseRotationEvent;
 import ru.recoin.implement.events.render.FovEvent;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
+import ru.recoin.implement.features.modules.misc.browser.WebBrowser;
 
 @Mixin(value={class_312.class})
 public class MouseMixin {
@@ -46,11 +47,23 @@ public class MouseMixin {
     @Shadow
     public double field_1787;
 
+    /** Browser: a click while looking at a screen in the world goes into that screen, not into the game. */
+    @Inject(method={"method_1601"}, at={@At(value="HEAD")}, cancellable=true)
+    public void dettex$worldScreenClick(long window, class_11910 input, int action, CallbackInfo ci) {
+        if (window != this.field_1779.method_22683().method_4490() || this.field_1779.field_1755 != null || this.field_1779.field_1724 == null || Unhook.isLocked()) {
+            return;
+        }
+        WebBrowser browser = WebBrowser.get();
+        if (browser != null && browser.isState() && browser.onWorldMouse(input.comp_4801(), action)) {
+            ci.cancel();
+        }
+    }
+
     @Inject(method={"method_1601"}, at={@At(value="HEAD")})
     public void onMouseButtonHook(long window, class_11910 input, int action, CallbackInfo ci) {
         int button = input.comp_4801();
         if (button != -1 && window == this.field_1779.method_22683().method_4490()) {
-            if (SelfDestruct.isLocked()) {
+            if (Unhook.isLocked()) {
                 return;
             }
             EventManager.callEvent(new KeyEvent(this.field_1779.field_1755, class_3675.class_307.field_1672, button, action));
@@ -59,7 +72,7 @@ public class MouseMixin {
 
     @Inject(method={"method_1598"}, at={@At(value="INVOKE", target="Lnet/minecraft/class_746;method_31548()Lnet/minecraft/class_1661;")}, cancellable=true, require=0)
     public void onMouseScrollHook(long window, double horizontal, double vertical, CallbackInfo ci) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return;
         }
         HotBarScrollEvent event = new HotBarScrollEvent(horizontal, vertical);
@@ -71,7 +84,7 @@ public class MouseMixin {
 
     @Inject(method={"method_1606"}, at={@At(value="HEAD")}, require=0)
     private void onUpdateMouse(double timeDelta, CallbackInfo ci) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return;
         }
         FovEvent event = new FovEvent();
@@ -85,7 +98,7 @@ public class MouseMixin {
 
     @WrapWithCondition(method={"method_1606"}, at={@At(value="INVOKE", target="Lnet/minecraft/class_746;method_5872(DD)V")}, require=0, allow=1)
     private boolean modifyMouseRotationInput(class_746 instance, double cursorDeltaX, double cursorDeltaY) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return true;
         }
         MouseRotationEvent event = new MouseRotationEvent((float)cursorDeltaX, (float)cursorDeltaY);

@@ -24,7 +24,7 @@ import ru.recoin.implement.events.chat.TabCompleteEvent;
 import ru.recoin.implement.features.commands.argument.ArgConsumer;
 import ru.recoin.implement.features.commands.argument.CommandArguments;
 import ru.recoin.implement.features.commands.manager.CommandRepository;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 
 public class CommandDispatcher
 implements QuickLogger {
@@ -39,7 +39,7 @@ implements QuickLogger {
     @EventHandler
     public void onChat(ChatEvent event) {
         String commandPrefix = null;
-        if (event.isCancelled() || SelfDestruct.isLocked()) {
+        if (event.isCancelled() || Unhook.isLocked()) {
             return;
         }
         String msg = event.getMessage();
@@ -69,7 +69,7 @@ implements QuickLogger {
 
     @EventHandler
     public void onTabComplete(TabCompleteEvent event) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             event.cancel();
             event.completions = new String[0];
             return;

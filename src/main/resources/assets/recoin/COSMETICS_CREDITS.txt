@@ -1,0 +1,70 @@
+Third-party content used by the Cosmetics module
+================================================
+
+All models below were converted to the client's formats (vanilla item models or the
+cosmetic geo JSON in assets/recoin/cosmetics). Conversion changed the file format,
+UV layout, placement and, for wings, the pose (flat feather panels, idle flap animation).
+
+------------------------------------------------------------------------------
+1) Swords, maces (Warhammer, Toothed/Makeshift Macuahuitl, Photon Axe,
+   Old World Axe), Xmas Hat, Big Xmas Hat, player models (Soldier,
+   Flamethrower Soldier, Krab, Reindeer, Goat)
+   Author : FrenchKrab - https://github.com/FrenchKrab/mc-blockbench-models
+   License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+            https://creativecommons.org/licenses/by/4.0/
+
+------------------------------------------------------------------------------
+2) "3D Mace"
+   Author : Volery39 - https://github.com/Volery39/MaceBut3DResourcePack
+   License: MIT (see notice below)
+
+3) Hats: Fedora, Propeller Cap, Headphones, Straw Hat, Dunce Cap, Goggles, Horns,
+   Unicorn Horn, Mohawk, Commando, Cage, Rocket, Pizza, Sword Hat
+   Author : Potatoboy9999 (PotatoPresident) - https://github.com/PotatoPresident/Fedora
+   License: MIT (see notice below)
+
+4) Wings: Angel, Evil, Dragon, Fire, Parrot, Bat, Fairy, Monarch Butterfly,
+   Blue Butterfly, Slime
+   Author : Paul Fulham (pau101) - https://github.com/pau101/Wings
+   License: MIT (see notice below)
+
+5) Backpacks: Frayed, Baby, Plated, Gilded, Bejeweled, Blazing, Withered, Endless
+   Author : Draylar - https://github.com/Draylar/inmis
+   License: MIT (see notice below)
+
+MIT notice (applies to items 2-5, each "Copyright (c) <author>" as listed above):
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all
+   copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+------------------------------------------------------------------------------
+6) Halos (Golden, Angel, Dark, Fire, Ice, Toxic, Double, Crown) and capes
+   (Midnight, Crimson, Emerald, Sunset, Ocean, Royal, Checker, Aurora, Flame)
+   are original works made for this client.
+   Meme cosmetics (hats "67" and "Deal With It"; player models "Skibidi Toilet",
+   "Six Seven", "Capybara"), hats (Traffic Cone, Top Hat, Cowboy Hat, Crown,
+   Chef Hat, Duck, Cat Ears, Jack-o'-Lantern, Witch Hat) and player models (Rubber Duck, Banana, Frog, Cat,
+   Penguin) are original models made for this client.
+
+------------------------------------------------------------------------------
+7) Sounds (assets/recoin/sounds/events/*.ogg) - CC0 1.0 (public domain)
+   Kenney (www.kenney.nl): Voiceover Pack, Voiceover Pack: Fighter, Impact Sounds,
+   Digital Audio, Music Jingles, Sci-Fi Sounds, Casino Audio.
+   OpenGameArt.org CC0 packs: "Hits/Punches", "Level up, power up, coin get".
+   Found through github.com/Mcamento8/open-game-sfx-index; converted to mono
+   OGG Vorbis and loudness-normalized.

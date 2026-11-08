@@ -92,6 +92,9 @@ implements QuickImports {
         if (brand.contains("holyworld") || brand.contains("vk.com/idwok")) {
             return "HolyWorld";
         }
+        if (serverIp.contains("holyfake")) {
+            return "HolyFake";
+        }
         if (serverIp.contains("reallyworld")) {
             return "ReallyWorld";
         }
@@ -149,6 +152,7 @@ implements QuickImports {
                     break;
                 }
             }
+            case "HolyFake":
             case "HolyWorld": {
                 if (objective == null) break;
                 for (class_9011 scoreboardEntry : scoreboard.method_1184(objective)) {
@@ -208,6 +212,10 @@ implements QuickImports {
 
     public static boolean isHolyWorld() {
         return server.equals("HolyWorld");
+    }
+
+    public static boolean isHolyFake() {
+        return server.equals("HolyFake");
     }
 
     public static boolean isVanilla() {

@@ -142,7 +142,7 @@ extends Module {
     private long lastBatchAlertTime;
 
     public BaseFinder() {
-        super("BaseFinder", "Base Finder", ModuleCategory.MISC);
+        super("BaseFinder", "Base Finder", ModuleCategory.PVE);
         this.setup(this.blocks, this.chunkRadius, this.workMode, this.minHeight, this.maxHeight, this.turnDistance, this.openFile, this.clearList);
     }
 

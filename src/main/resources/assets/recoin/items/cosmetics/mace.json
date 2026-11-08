@@ -129,6 +129,48 @@
           "type": "minecraft:model",
           "model": "minecraft:item/greenscythe"
         }
+      },
+      {
+        "when": "3D Mace",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/recoin_mace_3d"
+        }
+      },
+      {
+        "when": "Warhammer",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/recoin_mace_warhammer"
+        }
+      },
+      {
+        "when": "Toothed Macuahuitl",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/recoin_mace_toothed_macuahuitl"
+        }
+      },
+      {
+        "when": "Makeshift Macuahuitl",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/recoin_mace_makeshift_macuahuitl"
+        }
+      },
+      {
+        "when": "Photon Axe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/recoin_mace_photon_axe"
+        }
+      },
+      {
+        "when": "Old World Axe",
+        "model": {
+          "type": "minecraft:model",
+          "model": "minecraft:item/recoin_mace_old_world_axe"
+        }
       }
     ],
     "fallback": {

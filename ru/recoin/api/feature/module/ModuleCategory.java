@@ -8,6 +8,7 @@ public enum ModuleCategory {
     MOVEMENT("Movement"),
     RENDER("Render"),
     PLAYER("Player"),
+    PVE("PvE"),
     MISC("Misc");
 
     final String readableName;

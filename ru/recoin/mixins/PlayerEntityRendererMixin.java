@@ -74,6 +74,7 @@ import ru.recoin.implement.features.modules.movement.Speed;
 import ru.recoin.implement.features.modules.movement.pitbike.PitBikeEntity;
 import ru.recoin.implement.features.modules.render.ViewModel;
 import ru.recoin.implement.features.modules.render.cosmetics.Cosmetics;
+import ru.recoin.implement.features.modules.render.cosmetics.sync.DettexBadge;
 import ru.recoin.implement.features.modules.render.cosmetics.render.CosmeticFeatureRenderer;
 import ru.recoin.mixins.LivingEntityRendererAccessor;
 
@@ -121,8 +122,9 @@ public class PlayerEntityRendererMixin {
             bikeState.recoin$setBikePose(false, 0.0f, 0.0f, 0.0f, 0.0f);
         }
         Cosmetics cosmetics = Cosmetics.getInstance();
-        boolean customModelEnabled = cosmetics != null && cosmetics.shouldApplyCustomModel(entity);
-        ((ICustomPlayerModelState)state).recoin$setCustomModel(customModelEnabled, customModelEnabled ? cosmetics.getActiveCustomModel() : "");
+        String customModel = cosmetics == null ? null : cosmetics.customModelFor(entity);
+        ((ICustomPlayerModelState)state).recoin$setCustomModel(customModel != null, customModel != null ? customModel : "");
+        state.field_53337 = DettexBadge.decorate(entity.method_5667(), state.field_53337);
         if (entity == class_310.method_1551().field_1724 && Speed.getInstance() != null && Speed.getInstance().isFunTimeElytraMode()) {
             state.field_53411 = false;
             state.field_53534 = 0.0f;
@@ -135,21 +137,32 @@ public class PlayerEntityRendererMixin {
                 state.field_53418 = class_1799.field_8037;
             }
         }
-        if (!(entity instanceof class_742) || !PlayerEntityRendererMixin.recoin$hasCustomCape(player = (class_742)entity)) {
+        if (!(entity instanceof class_742)) {
+            return;
+        }
+        player = (class_742)entity;
+        class_12079.class_10726 selectedCape = PlayerEntityRendererMixin.recoin$selectedCape(player);
+        if (selectedCape == null) {
             return;
         }
         class_8685 original = state.field_53520;
         if (original != null) {
-            state.field_53520 = new class_8685(original.comp_1626(), (class_12079.class_12081)RECOIN_CAPE, (class_12079.class_12081)RECOIN_CAPE, original.comp_1629(), original.comp_1630());
+            state.field_53520 = new class_8685(original.comp_1626(), (class_12079.class_12081)selectedCape, (class_12079.class_12081)selectedCape, original.comp_1629(), original.comp_1630());
         }
         state.field_53532 = true;
         WaveyCapeRenderer.update(player, tickDelta);
     }
 
     @Unique
-    private static boolean recoin$hasCustomCape(class_742 player) {
+    private static class_12079.class_10726 recoin$selectedCape(class_742 player) {
+        Cosmetics cosmetics = Cosmetics.getInstance();
+        if (cosmetics == null) {
+            return null;
+        }
         class_310 client = class_310.method_1551();
-        return client.field_1724 != null && player.method_5667().equals(client.field_1724.method_5667()) || FriendUtils.isFriend((class_1297)player);
+        boolean self = client.field_1724 != null && player.method_5667().equals(client.field_1724.method_5667());
+        String name = player.method_5477() == null ? null : player.method_5477().getString();
+        return cosmetics.getCapeFor(self, player.method_5667(), name);
     }
 
     @Inject(method={"method_4212(Lnet/minecraft/class_10055;Lnet/minecraft/class_4587;FF)V"}, at={@At(value="TAIL")})

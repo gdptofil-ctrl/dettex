@@ -73,6 +73,7 @@ import ru.recoin.core.client.UserProfile;
 import ru.recoin.implement.features.modules.movement.fireworkbooster.BoosterSectionHeaderSetting;
 import ru.recoin.implement.features.modules.player.AutoBuy;
 import ru.recoin.implement.features.modules.render.Hud;
+import ru.recoin.implement.features.modules.render.cosmetics.CosmeticCatalog;
 import ru.recoin.implement.features.modules.render.cosmetics.CosmeticWeaponModels;
 import ru.recoin.implement.screens.autobuy.AutoBuyScreen;
 import ru.recoin.implement.screens.menu.AutoCrystalLocalization;
@@ -193,7 +194,7 @@ extends AbstractComponent {
     private String filteredSection;
     private int filteredFavoritesHash;
     private boolean filteredCacheValid;
-    private static final List<ModuleCategory> RENDER_CATEGORIES = List.of(ModuleCategory.COMBAT, ModuleCategory.MOVEMENT, ModuleCategory.RENDER, ModuleCategory.PLAYER, ModuleCategory.MISC);
+    private static final List<ModuleCategory> RENDER_CATEGORIES = List.of(ModuleCategory.COMBAT, ModuleCategory.MOVEMENT, ModuleCategory.RENDER, ModuleCategory.PLAYER, ModuleCategory.PVE, ModuleCategory.MISC);
     private static final List<String> EXTRA_NAVIGATION_NAMES = List.of("AutoBuy", "Configs", "Scripts", "Cosmetics");
     private Bounds logoButton;
     private long logoClickNanos;
@@ -327,19 +328,19 @@ extends AbstractComponent {
         this.navigationFrameNanos = now;
         this.navigationHoverBlend = 1.0f - (float)Math.exp(-frameSeconds / 0.04f);
         for (int index = 0; index < categories.size(); ++index) {
-            float ny = this.y + 77.0f + (float)(index * 26);
+            float ny = this.y + 77.0f + (float)(index * 22);
             this.navigation.put(categories.get(index), this.navigationBounds(this.x + 12.0f, ny));
         }
         int extraIndex = 0;
         for (String name : EXTRA_NAVIGATION_NAMES) {
-            float ny = this.y + 253.0f + (float)(extraIndex++ * 24);
+            float ny = this.y + 257.0f + (float)(extraIndex++ * 20);
             this.extraNavigation.put(name, this.navigationBounds(this.x + 12.0f, ny));
         }
-        Bounds favoritesNavigation = this.navigationBounds(this.x + 12.0f, this.y + 207.0f);
+        Bounds favoritesNavigation = this.navigationBounds(this.x + 12.0f, this.y + 211.0f);
         this.extraNavigation.put("Favorites", favoritesNavigation);
         this.drawNavigationHover(matrix, "Favorites", favoritesNavigation, mouseX, mouseY);
         this.drawNavigationLabel(matrix, favoritesNavigation, "\ue0ab", this.sectionName("Favorites"), "Favorites".equals(this.section));
-        MenuStyle.font(8.0f).drawString(matrix, MenuDescriptionLocalizer.isRussian() ? "\u041f\u0420\u041e\u0427\u0415\u0415" : "OTHER", this.x + 19.0f, this.y + 238.0f, -7301470);
+        MenuStyle.font(8.0f).drawString(matrix, MenuDescriptionLocalizer.isRussian() ? "\u041f\u0420\u041e\u0427\u0415\u0415" : "OTHER", this.x + 19.0f, this.y + 242.0f, -7301470);
         for (int index = 0; index < categories.size(); ++index) {
             ModuleCategory category = categories.get(index);
             selected = this.section.isEmpty() && MenuScreen.INSTANCE.category == category;
@@ -1061,113 +1062,67 @@ extends AbstractComponent {
     }
 
     private class_2960 cosmeticGroupCustomIcon(String group) {
+        String category = DropdownMenuComponent.cosmeticCategoryOfGroup(group);
+        if (category == null) {
+            return null;
+        }
+        List<CosmeticCatalog.Entry> entries = CosmeticCatalog.entries(category);
+        if (entries.isEmpty() || entries.get(0).icon() == null) {
+            return null;
+        }
+        return class_2960.method_60655((String)"recoin", (String)entries.get(0).icon());
+    }
+
+    private class_2960 getCosmeticCustomIcon(SelectSetting select, String value, int index) {
+        String category = DropdownMenuComponent.cosmeticCategoryOfSelect(select.getName());
+        if (category == null) {
+            return null;
+        }
+        String icon = CosmeticCatalog.iconFor(category, value);
+        return icon == null ? null : class_2960.method_60655((String)"recoin", (String)icon);
+    }
+
+    private static String cosmeticCategoryOfGroup(String group) {
         return switch (group) {
-            case "\u041a\u0440\u044b\u043b\u044c\u044f" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/wing_angel.png");
-            case "\u0420\u044e\u043a\u0437\u0430\u043a\u0438" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_frog.png");
-            case "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u043c\u043e\u0434\u0435\u043b\u0438" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/model_beer.png");
+            case "Player Models" -> CosmeticCatalog.PLAYER_MODELS;
+            case "Wings" -> CosmeticCatalog.WINGS;
+            case "Hats" -> CosmeticCatalog.HATS;
+            case "Backpacks" -> CosmeticCatalog.BACKPACKS;
+            case "Halos" -> CosmeticCatalog.HALOS;
+            case "Capes" -> CosmeticCatalog.CAPES;
             default -> null;
         };
     }
 
-    private class_2960 getCosmeticCustomIcon(SelectSetting select, String value, int index) {
-        String name = select.getName();
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u043a\u0440\u044b\u043b\u044c\u0435\u0432")) {
-            return switch (value) {
-                case "\u041a\u0440\u044b\u043b\u044c\u044f \u0430\u043d\u0433\u0435\u043b\u0430" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/wing_angel.png");
-                case "\u041a\u0440\u044b\u043b\u044c\u044f \u0432\u0443\u043b\u043a\u0430\u043d\u0430" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/wing_vulcano.png");
-                case "\u041a\u0440\u044b\u043b\u044c\u044f \u0434\u0440\u0430\u043a\u043e\u043d\u0447\u0438\u043a\u0430" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/wing_dragon.png");
-                default -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/wing_angel.png");
-            };
-        }
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u0440\u044e\u043a\u0437\u0430\u043a\u0430")) {
-            return switch (value) {
-                case "Frog Backpack" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_frog.png");
-                case "Backpack 1" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_1.png");
-                case "Backpack 2" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_2.png");
-                case "Backpack 3" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_3.png");
-                case "Backpack 4" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_4.png");
-                case "Backpack 5" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_5.png");
-                case "Backpack 6" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_6.png");
-                case "Backpack 7" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_7.png");
-                case "Backpack 8" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_8.png");
-                case "Backpack 9" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_9.png");
-                default -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/backpack_1.png");
-            };
-        }
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u0438\u0433\u0440\u043e\u043a\u0430")) {
-            return switch (value) {
-                case "Sahur" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/model_sahur.png");
-                case "Beer" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/model_beer.png");
-                case "CrazyRabbit" -> class_2960.method_60655((String)"recoin", (String)"textures/cosmetics/model_crazyrabbit.png");
-                default -> null;
-            };
-        }
-        return null;
+    private static String cosmeticCategoryOfSelect(String select) {
+        return switch (select) {
+            case "Player Model" -> CosmeticCatalog.PLAYER_MODELS;
+            case "Wings Model" -> CosmeticCatalog.WINGS;
+            case "Hat Model" -> CosmeticCatalog.HATS;
+            case "Backpack Model" -> CosmeticCatalog.BACKPACKS;
+            case "Halo Model" -> CosmeticCatalog.HALOS;
+            case "Cape Model" -> CosmeticCatalog.CAPES;
+            default -> null;
+        };
     }
 
     private class_1799 cosmeticGroupIcon(String group) {
         return switch (group) {
-            case "\u041c\u0435\u0447\u0438" -> new class_1799((class_1935)class_1802.field_8802);
-            case "\u0411\u0443\u043b\u0430\u0432\u044b" -> new class_1799((class_1935)class_1802.field_49814);
-            case "\u0410\u0440\u0431\u0430\u043b\u0435\u0442" -> new class_1799((class_1935)class_1802.field_8399);
-            case "\u041f\u0438\u0442\u043e\u043c\u0446\u044b" -> new class_1799((class_1935)class_1802.field_8777);
-            case "\u041a\u0440\u044b\u043b\u044c\u044f" -> new class_1799((class_1935)class_1802.field_8833);
-            case "\u0420\u044e\u043a\u0437\u0430\u043a\u0438" -> new class_1799((class_1935)class_1802.field_8106);
-            case "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u044b\u0435 \u043c\u043e\u0434\u0435\u043b\u0438" -> new class_1799((class_1935)class_1802.field_8575);
+            case "Swords" -> new class_1799((class_1935)class_1802.field_8802);
+            case "Maces" -> new class_1799((class_1935)class_1802.field_49814);
+            case "General" -> new class_1799((class_1935)class_1802.field_8575);
+            case "Sync" -> new class_1799((class_1935)class_1802.field_8634);
             default -> class_1799.field_8037;
         };
     }
 
     private class_1799 cosmeticPreviewStack(SelectSetting select, String value, int index) {
         String name = select.getName();
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u043c\u0435\u0447\u0430")) {
+        if (name.equals("Sword Model")) {
             return CosmeticWeaponModels.apply(new class_1799((class_1935)class_1802.field_22022), value, false);
         }
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u0431\u0443\u043b\u0430\u0432\u044b")) {
+        if (name.equals("Mace Model")) {
             return CosmeticWeaponModels.apply(new class_1799((class_1935)class_1802.field_49814), value, true);
-        }
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u0430\u0440\u0431\u0430\u043b\u0435\u0442\u0430")) {
-            return CosmeticWeaponModels.applyCrossbow(new class_1799((class_1935)class_1802.field_8399), value);
-        }
-        if (name.equals("\u041f\u0438\u0442\u043e\u043c\u0435\u0446")) {
-            return switch (value) {
-                case "\u0416\u0430\u0431\u0430" -> new class_1799((class_1935)class_1802.field_8777);
-                case "\u0420\u043e\u0431\u043e\u0442" -> new class_1799((class_1935)class_1802.field_8620);
-                case "\u0421\u043e\u0432\u0430" -> new class_1799((class_1935)class_1802.field_8153);
-                case "\u0427\u0435\u043a\u0443\u0448\u043a\u0430" -> new class_1799((class_1935)class_1802.field_20417);
-                case "\u041a\u043e\u0437\u043b\u0438\u043a" -> new class_1799((class_1935)class_1802.field_39057);
-                default -> new class_1799((class_1935)class_1802.field_8618);
-            };
-        }
-        if (name.equals("\u0412\u0438\u0434 \u0436\u0430\u0431\u044b")) {
-            return new class_1799((class_1935)class_1802.field_37535);
-        }
-        if (name.equals("\u0422\u0438\u043f \u0440\u043e\u0431\u043e\u0442\u0430")) {
-            return switch (index % 4) {
-                case 1 -> new class_1799((class_1935)class_1802.field_27071);
-                case 2 -> new class_1799((class_1935)class_1802.field_8494);
-                case 3 -> new class_1799((class_1935)class_1802.field_8793);
-                default -> new class_1799((class_1935)class_1802.field_8773);
-            };
-        }
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u043a\u0440\u044b\u043b\u044c\u0435\u0432")) {
-            return new class_1799((class_1935)class_1802.field_8833);
-        }
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u0440\u044e\u043a\u0437\u0430\u043a\u0430")) {
-            return switch (index % 5) {
-                case 1 -> new class_1799((class_1935)class_1802.field_8466);
-                case 2 -> new class_1799((class_1935)class_1802.field_16307);
-                case 3 -> new class_1799((class_1935)class_1802.field_8545);
-                case 4 -> new class_1799((class_1935)class_1802.field_27023);
-                default -> new class_1799((class_1935)class_1802.field_8106);
-            };
-        }
-        if (name.equals("\u041c\u043e\u0434\u0435\u043b\u044c \u0438\u0433\u0440\u043e\u043a\u0430")) {
-            return switch (value) {
-                case "Beer" -> new class_1799((class_1935)class_1802.field_20417);
-                case "CrazyRabbit" -> new class_1799((class_1935)class_1802.field_8073);
-                default -> new class_1799((class_1935)class_1802.field_8575);
-            };
         }
         return class_1799.field_8037;
     }
@@ -2983,6 +2938,10 @@ extends AbstractComponent {
             case "Opacity" -> "\u041d\u0435\u043f\u0440\u043e\u0437\u0440\u0430\u0447\u043d\u043e\u0441\u0442\u044c";
             case "Outline" -> "\u041e\u0431\u0432\u043e\u0434\u043a\u0430";
             case "Bypass" -> "\u041e\u0431\u0445\u043e\u0434";
+            case "Reach" -> "\u0414\u0438\u0441\u0442\u0430\u043d\u0446\u0438\u044f";
+            case "Silent FOV" -> "\u0422\u0438\u0445\u0438\u0439 FOV";
+            case "Reaction" -> "\u0420\u0435\u0430\u043a\u0446\u0438\u044f";
+            case "Safe Reach" -> "\u0411\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u0430\u044f \u0434\u0438\u0441\u0442\u0430\u043d\u0446\u0438\u044f";
             case "Web Vertical Speed" -> "\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u0432\u0432\u0435\u0440\u0445/\u0432\u043d\u0438\u0437";
             case "Regular" -> "\u041e\u0431\u044b\u0447\u043d\u044b\u0435";
             case "Free Hotbar" -> "\u041e\u0441\u0432\u043e\u0431\u043e\u0436\u0434\u0430\u0442\u044c \u0445\u043e\u0442\u0431\u0430\u0440";
@@ -3507,6 +3466,9 @@ extends AbstractComponent {
             case "Block Update" -> "\u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0431\u043b\u043e\u043a\u043e\u0432";
             case "Updated" -> "\u041e\u0431\u043d\u043e\u0432\u043b\u0451\u043d\u043d\u044b\u0439";
             case "Default", "Normal" -> "\u041e\u0431\u044b\u0447\u043d\u044b\u0439";
+            case "Shard" -> "\u0428\u0430\u0440\u0434";
+            case "Shard 2.0" -> "\u0428\u0430\u0440\u0434 2.0";
+            case "Shard 2.1" -> "\u0428\u0430\u0440\u0434 2.1";
             case "Block Overlay" -> "\u041e\u0432\u0435\u0440\u043b\u0435\u0439 \u0431\u043b\u043e\u043a\u043e\u0432";
             case "Fire Resistance" -> "\u041e\u0433\u043d\u0435\u0441\u0442\u043e\u0439\u043a\u043e\u0441\u0442\u044c";
             case "Fire" -> "\u041e\u0433\u043e\u043d\u044c";
@@ -3679,6 +3641,7 @@ extends AbstractComponent {
             case ModuleCategory.COMBAT -> "\ue052";
             case ModuleCategory.MOVEMENT -> "\ue034";
             case ModuleCategory.PLAYER -> "\ue079";
+            case ModuleCategory.PVE -> "\ue007";
             case ModuleCategory.RENDER -> "\ue009";
             case ModuleCategory.MISC -> "\ue017";
         };

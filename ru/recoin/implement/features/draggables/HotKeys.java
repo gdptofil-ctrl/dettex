@@ -146,6 +146,7 @@ extends AbstractDraggable {
             case ModuleCategory.COMBAT -> "\ue052";
             case ModuleCategory.MOVEMENT -> "\ue044";
             case ModuleCategory.PLAYER -> "\ue079";
+            case ModuleCategory.PVE -> "\ue007";
             case ModuleCategory.RENDER -> "\ue07a";
             case ModuleCategory.MISC -> "\ue023";
         };

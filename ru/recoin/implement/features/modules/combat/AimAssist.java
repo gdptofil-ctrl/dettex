@@ -48,27 +48,36 @@ import ru.recoin.api.feature.module.setting.implement.MultiSelectSetting;
 import ru.recoin.api.feature.module.setting.implement.SelectSetting;
 import ru.recoin.api.feature.module.setting.implement.ValueSetting;
 import ru.recoin.api.repository.friend.FriendUtils;
+import ru.recoin.common.util.math.MathUtil;
 import ru.recoin.common.util.other.Instance;
 import ru.recoin.implement.events.keyboard.MouseRotationEvent;
 import ru.recoin.implement.events.player.TickEvent;
 import ru.recoin.implement.features.modules.combat.TriggerBot;
+import ru.recoin.implement.features.modules.combat.killaura.aim.ShardAimEngine;
 
 public class AimAssist
 extends Module {
     private static final double[] STEPS = new double[]{0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0};
-    private final SelectSetting mode = new SelectSetting("Mode", "Aim assist mode").value("Default", "FunTime").selected("Default");
+    private final SelectSetting mode = new SelectSetting("Mode", "Aim assist mode").value("Default", "FunTime", "Shard").selected("Default");
     private final MultiSelectSetting targets = new MultiSelectSetting("Targets", "Entities that may be selected").value("Players", "Animals", "Mobs", "Friends").selected("Players", "Friends");
     private final BooleanSetting throughWalls = new BooleanSetting("Through Walls", "Aim through blocks").setValue(false);
     private final ValueSetting defaultSpeed = new ValueSetting("\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c", "\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u0434\u043e\u0432\u043e\u0434\u043a\u0438 \u043a\u0430\u043c\u0435\u0440\u044b").setValue(0.08f).range(0.02f, 0.4f).step(0.01f).visible(() -> this.mode.isSelected("Default"));
     private final ValueSetting funtimeSpeed = new ValueSetting("\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c", "\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u0434\u043e\u0432\u043e\u0434\u043a\u0438 \u043a\u0430\u043c\u0435\u0440\u044b").setValue(4.0f).range(1.0f, 10.0f).step(0.25f).visible(() -> this.mode.isSelected("FunTime"));
+    private final ValueSetting shardSpeed = new ValueSetting("\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c", "\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u0434\u043e\u0432\u043e\u0434\u043a\u0438 (Shard-режим)").setValue(3.2f).range(0.5f, 8.0f).step(0.1f).visible(() -> this.mode.isSelected("Shard"));
+    private final BooleanSetting shardOnlyYaw = new BooleanSetting("Only Yaw", "Almost do not move the pitch").setValue(false).visible(() -> this.mode.isSelected("Shard"));
+    private final BooleanSetting shardMultipoint = new BooleanSetting("Multi-Point", "Wander between points on the hitbox instead of locking the centre").setValue(true).visible(() -> this.mode.isSelected("Shard"));
+    private final BooleanSetting shardMicro = new BooleanSetting("Micro Movements", "Reaction delay, noise and humanised easing").setValue(true).visible(() -> this.mode.isSelected("Shard"));
     private final BooleanSetting onlyWeapon = new BooleanSetting("Only Weapon", "Work only while holding a weapon").setValue(true);
     private class_1309 target;
     private class_243 smoothedDirection;
     private long lastAimNano;
+    private long lastLookNano;
+    private long lastFrameNano;
+    private final ShardAimEngine shardEngine = new ShardAimEngine();
 
     public AimAssist() {
         super("AimAssist", "Aim Assist", ModuleCategory.COMBAT);
-        this.setup(this.mode, this.targets, this.throughWalls, this.defaultSpeed, this.funtimeSpeed, this.onlyWeapon);
+        this.setup(this.mode, this.targets, this.throughWalls, this.defaultSpeed, this.funtimeSpeed, this.shardSpeed, this.shardOnlyYaw, this.shardMultipoint, this.shardMicro, this.onlyWeapon);
     }
 
     public static AimAssist getInstance() {
@@ -83,6 +92,9 @@ extends Module {
     public void deactivate() {
         this.target = null;
         this.lastAimNano = 0L;
+        this.lastLookNano = 0L;
+        this.lastFrameNano = 0L;
+        this.shardEngine.reset();
         super.deactivate();
     }
 
@@ -98,6 +110,8 @@ extends Module {
         class_1309 class_13092 = found = triggerTarget != null ? triggerTarget : this.findTarget();
         if (found != this.target) {
             this.smoothedDirection = null;
+            this.shardEngine.reset();
+            this.lastLookNano = found == null ? 0L : System.nanoTime();
         }
         this.target = found;
     }
@@ -110,6 +124,25 @@ extends Module {
         if (this.onlyWeapon.isValue() && !this.isHoldingWeapon()) {
             return;
         }
+        if (this.mode.isSelected("Shard")) {
+            if (event.getCursorDeltaX() == 0.0f && event.getCursorDeltaY() == 0.0f) {
+                return;   // the mouse hook runs every frame; only a real mouse move counts as input
+            }
+            if (AimAssist.mc.field_1755 != null) {
+                return;
+            }
+            Aura aura = Aura.getInstance();
+            if (aura != null && aura.isState() && aura.getTarget() != null) {
+                return;   // Aura owns the rotation while it is active
+            }
+            this.lastLookNano = System.nanoTime();
+            float before = AimAssist.mc.field_1724.method_36454();
+            this.shardEngine.update((class_1297)this.target, this.shardSpeed.getValue(), 0.82, this.shardOnlyYaw.isValue(), this.shardMultipoint.isValue(), this.shardMicro.isValue());
+            if (AimAssist.mc.field_1724.method_36454() != before) {
+                AimAssist.mc.field_1724.field_6241 = AimAssist.mc.field_1724.method_36454();
+            }
+            return;
+        }
         float frame = mc.method_61966().method_60636();
         if (this.mode.isSelected("Default")) {
             class_243 vec3d = this.target.method_73189().method_1031(0.0, class_3532.method_15350((double)(AimAssist.mc.field_1724.method_33571().field_1351 - this.target.method_23318()), (double)0.0, (double)1.0), 0.0).method_1020(AimAssist.mc.field_1724.method_33571()).method_1029();
@@ -119,7 +152,11 @@ extends Module {
             float speedVal = class_3532.method_15363((float)this.defaultSpeed.getValue(), (float)0.02f, (float)0.4f);
             float delta = this.measureDelta();
             float factor = 1.0f - (float)Math.pow(1.0f - speedVal, delta);
-            float newYaw = currentYaw + deltaYaw * factor;
+            float yawStep = this.humanStep(deltaYaw * factor, 6.0f);
+            if (yawStep == 0.0f) {
+                return;
+            }
+            float newYaw = currentYaw + yawStep;
             AimAssist.mc.field_1724.method_36456(newYaw);
             AimAssist.mc.field_1724.field_6241 = newYaw;
             return;
@@ -133,6 +170,9 @@ extends Module {
         float pitch = (float)(-Math.toDegrees(Math.atan2(this.smoothedDirection.field_1351, Math.hypot(this.smoothedDirection.field_1352, this.smoothedDirection.field_1350))));
         float deltaYaw = class_3532.method_15393((float)(yaw - AimAssist.mc.field_1724.method_36454()));
         float deltaPitch = pitch - AimAssist.mc.field_1724.method_36455();
+        if (Math.abs(deltaYaw) + Math.abs(deltaPitch) < 1.0E-4f) {
+            return;
+        }
         if (Math.abs(deltaPitch) <= 13.0f && Math.abs(deltaYaw) < 8.0f && this.rayHits(AimAssist.mc.field_1724.method_33571(), AimAssist.mc.field_1724.method_36454(), AimAssist.mc.field_1724.method_36455(), 3.0, (class_1297)this.target, this.throughWalls.isValue())) {
             deltaPitch = 0.0f;
         }
@@ -142,10 +182,51 @@ extends Module {
             return;
         }
         float step = Math.min(1.0f, spd / Math.max(Math.abs(deltaYaw), Math.abs(deltaPitch) * 2.0f));
-        AimAssist.mc.field_1724.method_36456(AimAssist.mc.field_1724.method_36454() + deltaYaw * step);
-        if (deltaPitch != 0.0f) {
-            AimAssist.mc.field_1724.method_36457(class_3532.method_15363((float)(AimAssist.mc.field_1724.method_36455() + deltaPitch * step), (float)-90.0f, (float)90.0f));
+        step = Math.min(step, 0.45f);   // never eat most of the remaining angle in one frame
+        float yawStep = this.humanStep(deltaYaw * step, 8.0f);
+        float pitchStep = this.humanStep(deltaPitch * step, 5.0f);
+        if (yawStep == 0.0f && pitchStep == 0.0f) {
+            return;
         }
+        AimAssist.mc.field_1724.method_36456(AimAssist.mc.field_1724.method_36454() + yawStep);
+        if (pitchStep != 0.0f) {
+            AimAssist.mc.field_1724.method_36457(class_3532.method_15363((float)(AimAssist.mc.field_1724.method_36455() + pitchStep), (float)-90.0f, (float)90.0f));
+        }
+    }
+
+    /**
+     * Per-frame follow for the Shard mode. The mouse event already rotates while the player moves the mouse;
+     * this keeps a slow, humanised pursuit going when the mouse is still, so the camera does not "lock".
+     */
+    public void updateFrame() {
+        if (!this.isState() || !this.mode.isSelected("Shard") || AimAssist.mc.field_1724 == null || AimAssist.mc.field_1687 == null) {
+            return;
+        }
+        if (AimAssist.mc.field_1755 != null || !this.isValid(this.target) || AimAssist.mc.field_1724.method_6115()) {
+            if (this.shardEngine.hasTarget()) {
+                this.shardEngine.reset();
+            }
+            return;
+        }
+        if (this.onlyWeapon.isValue() && !this.isHoldingWeapon()) {
+            return;
+        }
+        long now = System.nanoTime();
+        if (this.lastLookNano == 0L) {
+            this.lastLookNano = now;
+        }
+        if (now - this.lastLookNano > 1_200_000_000L) {
+            return;   // the mouse has been still for too long: a real player does not keep tracking
+        }
+        if (now - this.lastLookNano < 45_000_000L || now - this.lastFrameNano < 8_000_000L) {
+            return;   // the mouse hook handled this frame, or the frame was already processed
+        }
+        this.lastFrameNano = now;
+        Aura aura = Aura.getInstance();
+        if (aura != null && aura.isState() && aura.getTarget() != null) {
+            return;   // Aura owns the rotation while it is active
+        }
+        this.shardEngine.update((class_1297)this.target, this.shardSpeed.getValue() * 0.7, 0.82, this.shardOnlyYaw.isValue(), this.shardMultipoint.isValue(), this.shardMicro.isValue());
     }
 
     private class_1309 findTarget() {
@@ -268,6 +349,16 @@ extends Module {
 
     private class_243 sample(class_238 box, int x, int y, int z) {
         return new class_243(class_3532.method_16436((double)STEPS[x], (double)box.field_1323, (double)box.field_1320), class_3532.method_16436((double)STEPS[y], (double)box.field_1322, (double)box.field_1325), class_3532.method_16436((double)STEPS[z], (double)box.field_1321, (double)box.field_1324));
+    }
+
+    /** Caps a rotation step and rounds it to a whole mouse-sensitivity step (GCD), as a real mouse would produce. */
+    private float humanStep(float step, float maximum) {
+        float limited = class_3532.method_15363(step, -maximum, maximum);
+        double gcd = MathUtil.computeGcd();
+        if (gcd <= 1.0E-4) {
+            return limited;
+        }
+        return (float)(Math.round((double)limited / gcd) * gcd);
     }
 
     private float measureDelta() {

@@ -23,6 +23,13 @@ repositories {
         name = 'babbaj'
         url = 'https://babbaj.github.io/maven/'
     }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
 }
 
 loom {
@@ -63,7 +70,9 @@ dependencies {
     // at runtime too (in production it is installed as a separate mod).
     modImplementation "meteordevelopment:baritone:1.21.11-SNAPSHOT"
     // Baritone's ElytraProcess needs nether-pathfinder at runtime.
-    runtimeOnly "dev.babbaj:nether-pathfinder:1.6"
+    // The babbaj maven repo is not consulted for runtimeClasspath by Fabric Loom,
+    // so the jar is bundled locally instead.
+    runtimeOnly files("libs/nether-pathfinder-1.6.jar")
 
     // MixinExtras
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
@@ -88,6 +97,23 @@ dependencies {
     // compiled classes are bundled via libs/mediaplayerinfo.jar and the
     // .class files under src/main/resources/dev.
     compileOnly files("libs/mediaplayerinfo.jar")
+
+    // FPS mods for `gradlew runClient` (turn off with perf_mods=false in gradle.properties).
+    // In the normal game, put the same mods (Fabric, 1.21.11) into the mods folder next to the client.
+    if (project.findProperty('perf_mods')?.toString() != 'false') {
+        modRuntimeOnly "maven.modrinth:lithium:Ow7wA0kG"         // Lithium 0.21.4
+        modRuntimeOnly "maven.modrinth:ferrite-core:Ii0gP3D8"    // FerriteCore 8.2.0
+        modRuntimeOnly "maven.modrinth:badoptimizations:Q3Dusz2j" // BadOptimizations 2.4.1
+        // Re-enabled with their nested (jar-in-jar) dependencies extracted locally,
+        // because Loom's dev runClient does not load nested jars from mod jars.
+        modRuntimeOnly files("libs/entityculling-1.11.3.jar")
+        modRuntimeOnly files("libs/transition-1.0.26.jar")
+        modRuntimeOnly files("libs/immediatelyfast-1.14.3.jar")
+        runtimeOnly files("libs/reflect-1.6.2.jar")
+        modRuntimeOnly files("libs/dynamicfps-3.11.6.jar")
+        runtimeOnly files("libs/battery-2.0.0.jar")
+    }
+
 }
 
 java {
@@ -103,3 +129,84 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-Xmaxerrs' << '10000'
 }
 
+
+// ---------------------------------------------------------------- Rinku (Chromium for the Browser module)
+// Rinku (Keksuccino, LGPL-2.1, https://github.com/Keksuccino/Rinku) is downloaded from Modrinth:
+//  * copied into run/mods for `gradlew runClient`;
+//  * nested into the built client jar (META-INF/jars), so the normal game gets it automatically.
+// Turn off with bundle_rinku=false in gradle.properties. If Modrinth is unreachable the build
+// still succeeds, the client then downloads Rinku itself when the Browser module is turned on.
+def rinkuDir = layout.buildDirectory.dir('rinku').get().asFile
+
+tasks.register('fetchRinku') {
+    group = 'dettex'
+    description = 'Downloads the Rinku mod (Fabric 1.21.11) from Modrinth'
+    onlyIf { project.findProperty('bundle_rinku')?.toString() != 'false' }
+    doLast {
+        rinkuDir.mkdirs()
+        if (rinkuDir.listFiles().any { it.name.endsWith('.jar') } && project.findProperty('refresh_rinku')?.toString() != 'true') return   // already downloaded
+        try {
+            def enc = { String s -> URLEncoder.encode(s, 'UTF-8') }
+            def api = "https://api.modrinth.com/v2/project/rinku/version?loaders=${enc('["fabric"]')}&game_versions=${enc('["' + project.minecraft_version + '"]')}"
+            def open = { String u ->
+                def c = new URL(u).openConnection()
+                c.setRequestProperty('User-Agent', 'DettexClient-build (gradle)')
+                c.connectTimeout = 15000
+                c.readTimeout = 120000
+                c
+            }
+            def versions = new groovy.json.JsonSlurper().parse(open(api).inputStream)
+            if (versions.isEmpty()) throw new GradleException("no Rinku for Fabric ${project.minecraft_version} on Modrinth")
+            def file = versions[0].files.find { it.primary } ?: versions[0].files[0]
+            def target = new File(rinkuDir, file.filename)
+            def tmp = new File(rinkuDir, file.filename + '.part')
+            open(file.url).inputStream.withStream { i -> tmp.withOutputStream { o -> o << i } }
+            def sha = java.security.MessageDigest.getInstance('SHA-512').digest(tmp.bytes).encodeHex().toString()
+            if (!sha.equalsIgnoreCase(file.hashes.sha512)) { tmp.delete(); throw new GradleException('Rinku download is corrupted (SHA-512 mismatch)') }
+            rinkuDir.listFiles().findAll { it.name.endsWith('.jar') }.each { it.delete() }
+            tmp.renameTo(target)
+            logger.lifecycle("Rinku ${versions[0].version_number} -> ${target.name}")
+        } catch (Exception e) {
+            logger.warn("Could not download Rinku (${e.message}). The client will download it itself when the Browser module is turned on.")
+        }
+    }
+}
+
+// runClient: put Rinku into run/mods (only one copy)
+tasks.register('installRinkuDev') {
+    group = 'dettex'
+    dependsOn 'fetchRinku'
+    doLast {
+        def jar = rinkuDir.listFiles()?.find { it.name.endsWith('.jar') }
+        if (jar == null) return
+        def mods = file('run/mods')
+        mods.mkdirs()
+        mods.listFiles().findAll { it.name.toLowerCase().startsWith('rinku') && it.name != jar.name }.each { it.delete() }
+        def dst = new File(mods, jar.name)
+        if (!dst.exists()) java.nio.file.Files.copy(jar.toPath(), dst.toPath())
+    }
+}
+tasks.matching { it.name == 'runClient' }.configureEach { dependsOn 'installRinkuDev' }
+
+// release jar: nest Rinku inside (Fabric loads META-INF/jars/* listed in fabric.mod.json "jars")
+tasks.named('remapJar') {
+    dependsOn 'fetchRinku'
+    doLast {
+        def jar = rinkuDir.listFiles()?.find { it.name.endsWith('.jar') }
+        if (jar == null) return
+        def out = archiveFile.get().asFile.toPath()
+        def entry = "META-INF/jars/${jar.name}"
+        java.nio.file.FileSystems.newFileSystem(out, [:] as Map).withCloseable { fs ->
+            def dir = fs.getPath('META-INF/jars')
+            java.nio.file.Files.createDirectories(dir)
+            java.nio.file.Files.copy(jar.toPath(), fs.getPath(entry), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+            def fmj = fs.getPath('fabric.mod.json')
+            def json = new groovy.json.JsonSlurper().parse(java.nio.file.Files.newBufferedReader(fmj, java.nio.charset.StandardCharsets.UTF_8))
+            def jars = (json.jars ?: []).findAll { !(it.file ?: '').contains('rinku') }
+            jars << [file: entry]
+            json.jars = jars
+            java.nio.file.Files.writeString(fmj, groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)), java.nio.charset.StandardCharsets.UTF_8)
+        }
+        logger.lifecycle("Rinku nested into ${out.fileName}")
+    }
+}

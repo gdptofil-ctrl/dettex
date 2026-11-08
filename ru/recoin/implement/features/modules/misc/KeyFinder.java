@@ -295,7 +295,7 @@ extends Module {
     }
 
     public KeyFinder() {
-        super("KeyFinder", "KeyFinder", ModuleCategory.MISC);
+        super("KeyFinder", "KeyFinder", ModuleCategory.PVE);
         this.setup(this.searchBind, this.clearBind, this.searchType, this.displayFound);
         this.foundSpawners = new HashSet<Long>();
         this.foundChests = new HashSet<class_2338>();

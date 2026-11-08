@@ -160,7 +160,13 @@ public final class EventManager {
             for (int i = 0; i < listeners.length; ++i) {
                 MethodData data = listeners[i];
                 try {
-                    data.invoker().invoke(event);
+                    if (ru.recoin.implement.features.modules.render.perf.FrameProfiler.enabled) {
+                        long start = System.nanoTime();
+                        data.invoker().invoke(event);
+                        ru.recoin.implement.features.modules.render.perf.FrameProfiler.add(data.source(), System.nanoTime() - start);
+                    } else {
+                        data.invoker().invoke(event);
+                    }
                 }
                 catch (InvocationTargetException e) {
                     EventManager.handleInvocationException(data, event, e.getCause());

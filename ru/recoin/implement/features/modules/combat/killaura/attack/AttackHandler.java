@@ -89,6 +89,8 @@ import net.minecraft.class_9362;
 import ru.recoin.api.feature.module.Module;
 import ru.recoin.common.QuickImports;
 import ru.recoin.common.util.entity.PlayerIntersectionUtil;
+import ru.recoin.common.util.world.ServerUtil;
+import ru.recoin.mixins.ClientPlayerEntityRotationAccessor;
 import ru.recoin.common.util.entity.PlayerInventoryComponent;
 import ru.recoin.common.util.entity.PlayerInventoryUtil;
 import ru.recoin.common.util.math.MathUtil;
@@ -136,6 +138,7 @@ implements QuickImports {
     private double packetVelocityY;
     private float packetFallDistance;
     private boolean packetSprintResetActive;
+    private int smartCritLastAge = -1;
     private boolean packetSprintWasActive;
     private transient int fastSprintTicks;
     private transient Module fastSprintOwner;
@@ -648,8 +651,59 @@ implements QuickImports {
         }
     }
 
+    private void performSmartCrit(AttackPerpetrator.AttackPerpetratorConfigurable config) {
+        class_1657 player = AttackHandler.mc.field_1724;
+        if (player == null || !player.method_5805() || AttackHandler.mc.field_1687 == null || AttackHandler.mc.field_1761 == null) {
+            return;
+        }
+        class_1309 target = config == null ? null : config.getTarget();
+        if (target == null || !target.method_5805()) {
+            return;
+        }
+        // Only crit from ground (otherwise already airborne → let normal crit happen)
+        if (!player.method_24828()) {
+            return;
+        }
+        CriticalState cs = this.resolveCriticalState(0);
+        if (this.hasMovementRestrictions(cs)) {
+            return;
+        }
+        if (!player.method_56094((class_1297)target, 0.0)) {
+            return;
+        }
+        if (player.method_5624()) {
+            return; // sprinting - sprint-reset path handles attacks separately
+        }
+        if (this.smartCritLastAge == player.field_6012) {
+            return; // once per attack age
+        }
+        boolean holyFamily = ServerUtil.isHolyWorld() || ServerUtil.isHolyFake();
+        if (holyFamily) {
+            // HolyWorld-copy friendly: down-only packet (no headroom required)
+            player.field_6017 = 0.01f;
+            ClientPlayerEntityRotationAccessor accessor = (ClientPlayerEntityRotationAccessor)player;
+            double x = player.method_23317();
+            double y = player.method_23318();
+            double z = player.method_23321();
+            PlayerIntersectionUtil.sendPacketWithOutEvent(new class_2828.class_2830(x, y - 1.0E-6, z, accessor.recoin$getLastYaw(), accessor.recoin$getLastPitch(), false, false));
+        } else {
+            // Standard packet crit: mini-hop up then down (requires headroom)
+            class_238 bb = player.method_5829();
+            if (!AttackHandler.mc.field_1687.method_8587((class_1297)player, bb.method_989(0.0, 0.001, 0.0))) {
+                return;
+            }
+            class_243 pos = player.method_73189();
+            PlayerIntersectionUtil.sendPacketWithOutEvent(new class_2828.class_2829(pos.field_1352, pos.field_1351 + 0.001, pos.field_1350, false, player.field_5976));
+            PlayerIntersectionUtil.sendPacketWithOutEvent(new class_2828.class_2829(pos.field_1352, pos.field_1351, pos.field_1350, false, player.field_5976));
+        }
+        this.smartCritLastAge = player.field_6012;
+    }
+
     private void attack(AttackPerpetrator.AttackPerpetratorConfigurable config) {
         Angle restoreAngle = this.applyApexTimeServerRotation(config);
+        if (config.isSmartCrits()) {
+            this.performSmartCrit(config);
+        }
         AttackHandler.mc.field_1761.method_2918((class_1657)AttackHandler.mc.field_1724, (class_1297)config.getTarget());
         AttackHandler.mc.field_1724.method_6104(class_1268.field_5808);
         Aura.getInstance().notifyRotationAttack();
@@ -760,6 +814,9 @@ implements QuickImports {
         CriticalState criticalState = this.resolveCriticalState(ticks);
         if (config.isOnlyCritical() && !this.hasMovementRestrictions(criticalState)) {
             if (config.isCritsOnlySpace() && criticalState.onGround && !AttackHandler.mc.field_1690.field_1903.method_1434()) {
+                return true;
+            }
+            if (config.isSmartCrits() && criticalState.onGround) {
                 return true;
             }
             return this.isPlayerInCriticalState(criticalState, ticks, config.isRandomizeHits());

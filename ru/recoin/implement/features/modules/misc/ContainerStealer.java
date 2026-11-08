@@ -40,7 +40,7 @@ extends Module {
     private final ValueSetting delaySetting = new ValueSetting("Delay", "Delay between click on slot").setValue(100.0f).range(0, 1000).visible(() -> this.modeSetting.isSelected("Default"));
 
     public ContainerStealer() {
-        super("ContainerStealer", "Container Stealer", ModuleCategory.MISC);
+        super("ContainerStealer", "Container Stealer", ModuleCategory.PVE);
         this.setup(this.modeSetting, this.delaySetting);
     }
 

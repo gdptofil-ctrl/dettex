@@ -39,20 +39,20 @@ public final class RecoinFileLogger {
             if (configuration.getAppender(APPENDER_NAME) != null) {
                 return;
             }
-            Path logPath = FabricLoader.getInstance().getGameDir().resolve("logs").resolve("recoin.log");
+            Path logPath = FabricLoader.getInstance().getGameDir().resolve("logs").resolve("dettexclient.log");
             Files.createDirectories(logPath.getParent(), new FileAttribute[0]);
-            Files.deleteIfExists(logPath);
-            Files.createFile(logPath, new FileAttribute[0]);
+            try { Files.deleteIfExists(logPath); } catch (Throwable ignored) {}
+            try { Files.createFile(logPath, new FileAttribute[0]); } catch (Throwable ignored) {}
             PatternLayout layout = PatternLayout.newBuilder().withConfiguration(configuration).withPattern("%d{yyyy-MM-dd HH:mm:ss} [%t/%level]: %msg%n%throwable").build();
             FileAppender appender = ((FileAppender.Builder)((FileAppender.Builder)((FileAppender.Builder)((FileAppender.Builder)FileAppender.newBuilder().setName(APPENDER_NAME)).withFileName(logPath.toString()).withAppend(false).withLocking(false).withBufferedIo(false)).setConfiguration(configuration)).setLayout((Layout)layout)).build();
             if (appender == null) {
-                throw new IllegalStateException("Could not create Recoin log appender");
+                throw new IllegalStateException("Could not create Dettex log appender");
             }
             appender.start();
             configuration.addAppender((Appender)appender);
             configuration.getRootLogger().addAppender((Appender)appender, null, null);
             context.updateLoggers();
-            LogManager.getLogger((String)"RECOIN").info("File logging enabled: {}", (Object)logPath.toAbsolutePath());
+            try { LogManager.getLogger((String)"DETTEX").info("File logging enabled: {}", (Object)logPath.toAbsolutePath()); } catch (Throwable ignored) {}
         }
         catch (Exception exception) {
             System.err.println("[RECOIN] Failed to initialize file logging: " + String.valueOf(exception));

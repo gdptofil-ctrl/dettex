@@ -26,7 +26,7 @@ extends Module {
     private int delay;
 
     public AutoFish() {
-        super("AutoFish", "Auto Fish", ModuleCategory.PLAYER);
+        super("AutoFish", "Auto Fish", ModuleCategory.PVE);
     }
 
     @EventHandler

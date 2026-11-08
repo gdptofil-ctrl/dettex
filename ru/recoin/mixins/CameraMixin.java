@@ -43,6 +43,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import ru.recoin.api.event.EventManager;
 import ru.recoin.implement.events.render.CameraEvent;
 import ru.recoin.implement.events.render.CameraPositionEvent;
+import ru.recoin.implement.features.modules.combat.AimAssist;
 import ru.recoin.implement.features.modules.combat.Aura;
 import ru.recoin.implement.features.modules.combat.killaura.rotation.Angle;
 import ru.recoin.implement.features.modules.combat.killaura.rotation.RotationController;
@@ -95,6 +96,10 @@ public abstract class CameraMixin {
 
     @Inject(method={"method_19321"}, at={@At(value="HEAD")}, require=0)
     private void recoin$updateLegitRotation(class_1937 world, class_1297 focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
+        AimAssist aimAssist = AimAssist.getInstance();
+        if (aimAssist != null) {
+            aimAssist.updateFrame();
+        }
         Aura aura = Aura.getInstance();
         if (aura != null) {
             if (RotationController.INSTANCE.getLastRotationProvider() instanceof ClickAction) {

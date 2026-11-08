@@ -27,7 +27,6 @@ import ru.recoin.common.util.other.Instance;
 import ru.recoin.implement.events.packet.PacketEvent;
 import ru.recoin.implement.events.player.GlidingVelocityEvent;
 import ru.recoin.implement.events.player.GlobalTickEvent;
-import ru.recoin.implement.events.render.DrawEvent;
 
 public class GrimGlide
 extends Module {
@@ -74,17 +73,11 @@ extends Module {
         if (this.correctionTicks > 0) {
             --this.correctionTicks;
         }
-    }
-
-    @EventHandler
-    public void onDraw(DrawEvent event) {
         if (GrimGlide.mc.field_1724 == null || !GrimGlide.mc.field_1724.method_6128() || !this.mode.isSelected("ReallyWorld")) {
             this.timerRate = 1.0f;
             return;
         }
-        if (this.mode.isSelected("ReallyWorld") && GrimGlide.mc.field_1724.method_6128()) {
-            this.timerRate = !this.correctionReceived ? (GrimGlide.mc.field_1724.field_6012 % 2 == 0 ? 1.6f : 0.35f) : 1.0f;
-        }
+        this.timerRate = !this.correctionReceived ? (GrimGlide.mc.field_1724.field_6012 % 2 == 0 ? 1.6f : 0.35f) : 1.0f;
     }
 
     @Override

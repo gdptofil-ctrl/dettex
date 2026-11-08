@@ -43,7 +43,9 @@ implements QuickImports {
     public static double computeGcd() {
         double sensitivity = (Double)MathUtil.mc.field_1690.method_42495().method_41753();
         double multiplier = sensitivity * 0.6 + 0.2;
-        return multiplier * multiplier * multiplier * 1.2;
+        boolean scoped = MathUtil.mc.field_1724 != null && !MathUtil.mc.field_1690.field_1914
+                && MathUtil.mc.field_1690.method_31044().method_31034() && MathUtil.mc.field_1724.method_31550();
+        return multiplier * multiplier * multiplier * (scoped ? 0.15 : 1.2);
     }
 
     public static int getRandom(int min, int max) {

@@ -29,8 +29,6 @@ import net.minecraft.class_811;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import ru.recoin.implement.features.modules.render.CustomMace;
-import ru.recoin.implement.features.modules.render.CustomSwords;
 import ru.recoin.implement.features.modules.render.cosmetics.CosmeticWeaponModels;
 import ru.recoin.implement.features.modules.render.cosmetics.Cosmetics;
 
@@ -46,39 +44,17 @@ public abstract class ItemModelResolverMixin {
         }
         boolean isMace = stack.method_31574(class_1802.field_49814);
         boolean isSword = ItemModelResolverMixin.isSword(stack);
-        boolean isCrossbow = stack.method_31574(class_1802.field_8399);
-        if (!(isMace || isSword || isCrossbow)) {
+        if (!isMace && !isSword) {
+            return stack;
+        }
+        Cosmetics cosmetics = Cosmetics.getInstance();
+        if (cosmetics == null || !cosmetics.isState()) {
             return stack;
         }
         boolean isSelf = itemOwner == null || itemOwner.method_72393() == null || itemOwner.method_72393() == class_310.method_1551().field_1724;
-        Cosmetics cosmetics = Cosmetics.getInstance();
-        if (cosmetics != null && cosmetics.isState()) {
-            if (isCrossbow && cosmetics.getCrossbowsEnabled().isValue() && (!cosmetics.getCrossbowsSelfOnly().isValue() || isSelf)) {
-                return CosmeticWeaponModels.applyCrossbow(stack, cosmetics.getCrossbowModel().getSelected());
-            }
-            if (isSword && cosmetics.getSwordsEnabled().isValue() && (!cosmetics.getSwordsSelfOnly().isValue() || isSelf)) {
-                return CosmeticWeaponModels.apply(stack, cosmetics.getActualSword(), false);
-            }
-            if (isMace && cosmetics.getMacesEnabled().isValue() && (!cosmetics.getMacesSelfOnly().isValue() || isSelf)) {
-                return CosmeticWeaponModels.apply(stack, cosmetics.getActualMace(), true);
-            }
-        }
-        if (isCrossbow) {
-            return stack;
-        }
-        CustomSwords swords = CustomSwords.getInstance();
-        if (isSword && swords != null && swords.isState()) {
-            if (!swords.isSelfOnly() || isSelf) {
-                return CosmeticWeaponModels.apply(stack, swords.getSelectedWeapon(), false);
-            }
-        }
-        CustomMace mace = CustomMace.getInstance();
-        if (isMace && mace != null && mace.isState()) {
-            if (!mace.isSelfOnly() || isSelf) {
-                return CosmeticWeaponModels.apply(stack, mace.getSelectedWeapon(), true);
-            }
-        }
-        return stack;
+        java.util.UUID owner = itemOwner == null || itemOwner.method_72393() == null ? null : itemOwner.method_72393().method_5667();
+        String skin = cosmetics.weaponFor(isMace, owner, isSelf);
+        return skin == null ? stack : CosmeticWeaponModels.apply(stack, skin, isMace);
     }
 
     private static boolean isSword(class_1799 stack) {

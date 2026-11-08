@@ -46,6 +46,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.recoin.api.event.EventManager;
+import ru.recoin.implement.features.modules.render.perf.FrameProfiler;
 import ru.recoin.api.feature.draggable.AbstractDraggable;
 import ru.recoin.api.system.font.FontRenderer;
 import ru.recoin.common.QuickImports;
@@ -112,12 +113,18 @@ implements QuickImports {
         Render2DUtil.setActiveContext(context);
         Render2DUtil.setTextYOffset(-2.5f);
         try {
+            long t0 = FrameProfiler.enabled ? System.nanoTime() : 0L;
             DrawEvent event = new DrawEvent(context, drawEngine, tickCounter.method_60637(false));
             EventManager.callEvent(event);
+            long t1 = FrameProfiler.enabled ? System.nanoTime() : 0L;
             Render2DUtil.onRender(context);
             context.method_73199();
             FontRenderer.flushQueuedText(context);
             GuiRenderFlusher.flush();
+            if (FrameProfiler.enabled) {
+                FrameProfiler.section("HUD modules", t1 - t0);
+                FrameProfiler.section("HUD shapes+text flush", System.nanoTime() - t1);
+            }
         }
         finally {
             Render2DUtil.setTextYOffset(0.0f);
@@ -172,12 +179,16 @@ implements QuickImports {
                                     context.method_51448().translate(-centerX, -centerY);
                                     Render2DUtil.setRenderAlpha(scale);
                                     Render2DUtil.setHudDecorationActive(true);
+                                    long td = FrameProfiler.enabled ? System.nanoTime() : 0L;
                                     try {
                                         draggable.drawDraggable(context);
                                         Render2DUtil.onRender(context);
                                         context.method_73199();
                                         FontRenderer.flushQueuedText(context);
                                         GuiRenderFlusher.flush();
+                                        if (FrameProfiler.enabled) {
+                                            FrameProfiler.section("HUD " + draggable.getClass().getSimpleName(), System.nanoTime() - td);
+                                        }
                                     }
                                     finally {
                                         Render2DUtil.setHudDecorationActive(false);

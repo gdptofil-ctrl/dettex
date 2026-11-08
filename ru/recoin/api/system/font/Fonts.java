@@ -21,6 +21,10 @@ public class Fonts {
             return FontRenderer.disabled(size);
         }
         FontAtlas atlas = Fonts.getAtlas(name);
+        if (name.startsWith("dettex-")) {
+            // symbols the new fonts don't have (hearts, stars, coins...) are drawn with Inter
+            return new FontRenderer(atlas, Fonts.getAtlas(Type.INTER_BOLD.getType()), size / 2.0f, size);
+        }
         if (name.equals(Type.PLIANT_BOLD2.getType()) || name.equals(Type.PLIANT_BOLD.getType()) || name.equals(Type.PLIANT_MEDIUM.getType()) || name.equals(Type.PLIANT_REGULAR.getType())) {
             return new FontRenderer(atlas, Fonts.getAtlas(Type.DEFAULT.getType()), size / 2.0f, size);
         }
@@ -47,7 +51,18 @@ public class Fonts {
         return Fonts.getSize(size, Type.DEFAULT);
     }
 
+    /** Set by the Shrift module: the client's interface text (Inter) is drawn with this font instead. */
+    public static volatile Type interfaceOverride;
+
+    public static boolean isInterfaceFont(Type type) {
+        return type == Type.INTER_BOLD || type == Type.INTER_SEMI || type == Type.INTER_MEDIUM || type == Type.BOLD || type == Type.REGULAR || type == Type.REGULARNEW;
+    }
+
     public static FontRenderer getSize(int size, Type type) {
+        Type override = interfaceOverride;
+        if (override != null && Fonts.isInterfaceFont(type)) {
+            type = override;
+        }
         Type resolvedType = Fonts.resolveLegacyType(type);
         return FONT_CACHE.computeIfAbsent(new FontKey(size, resolvedType), key -> Fonts.create(size, resolvedType.getType()));
     }
@@ -92,7 +107,15 @@ public class Fonts {
         ICONSTYPETHO("iconstypetho"),
         MAINMENU_ICONS("mainmenuicons"),
         COMBINED_ICONS("combined-icons"),
-        SOCIAL_ICONS("social-icons");
+        SOCIAL_ICONS("social-icons"),
+        // fonts added by the Shrift module (OFL fonts, see assets/minecraft/fonts/dettex-fonts-OFL.txt)
+        MARCK_SCRIPT("dettex-marckscript"),
+        BAD_SCRIPT("dettex-badscript"),
+        CAVEAT("dettex-caveat"),
+        LOBSTER("dettex-lobster"),
+        PACIFICO("dettex-pacifico"),
+        COMFORTAA("dettex-comfortaa"),
+        UNBOUNDED("dettex-unbounded");
 
         private final String type;
 

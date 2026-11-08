@@ -161,7 +161,7 @@ extends Module {
     }
 
     public AppleFarm() {
-        super("AppleFarm", "Apple Farm", ModuleCategory.MISC);
+        super("AppleFarm", "Apple Farm", ModuleCategory.PVE);
     }
 
     @Override

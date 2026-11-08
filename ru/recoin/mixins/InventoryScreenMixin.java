@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.recoin.api.accessor.ContainerButtonHost;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 import ru.recoin.implement.features.modules.render.UiAnimationManager;
 
 @Mixin(value={class_490.class})
@@ -55,7 +55,7 @@ public abstract class InventoryScreenMixin {
         ContainerButtonHost buttons = (ContainerButtonHost)((Object)this);
         buttons.recoin$updateContainerButtonStates();
         class_310 client = class_310.method_1551();
-        if (client.field_1724 == null || SelfDestruct.isLocked()) {
+        if (client.field_1724 == null || Unhook.isLocked()) {
             return;
         }
         class_4185 button = buttons.recoin$getInventoryThrowButton();

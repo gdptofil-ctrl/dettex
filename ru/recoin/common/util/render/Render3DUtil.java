@@ -83,6 +83,8 @@ implements QuickImports {
     private static final Map<class_265, class_3545<List<class_238>, List<Line>>> SHAPE_OUTLINES = new HashMap<class_265, class_3545<List<class_238>, List<Line>>>();
     private static final Map<class_265, List<class_238>> SHAPE_BOXES = new HashMap<class_265, List<class_238>>();
     public static final List<Texture> TEXTURE_DEPTH = new ArrayList<Texture>();
+    /** Textured panels with normal UVs (u right, v down), e.g. the in-world Browser window. Depth tested. */
+    public static final List<Texture> PAGE = new ArrayList<Texture>();
     public static final List<Texture> TEXTURE = new ArrayList<Texture>();
     public static final List<Line> LINE_DEPTH = new ArrayList<Line>();
     public static final List<Line> LINE = new ArrayList<Line>();
@@ -144,6 +146,26 @@ implements QuickImports {
     public static void onWorldRender(WorldRenderEvent e) {
         class_287 buffer;
         ParticleBatchRenderer.renderBatches();
+        if (!PAGE.isEmpty()) {
+            LegacyRenderSystem.enableBlend();
+            LegacyRenderSystem.disableCull();
+            LegacyRenderSystem.enableDepthTest();
+            LegacyRenderSystem.blendFunc((Object)GlStateManager.SrcFactor.SRC_ALPHA, (Object)GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+            for (Texture page : PAGE) {
+                LegacyRenderSystem.setShaderTexture(0, page.id);
+                LegacyRenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
+                class_287 pb = class_289.method_1348().method_60827(VertexFormat.class_5596.field_27382, class_290.field_1575);
+                int c = page.color.x;
+                pb.method_56824(page.entry, page.x, page.y + page.height, 0.0f).method_22913(0.0f, 0.0f).method_39415(c);
+                pb.method_56824(page.entry, page.x + page.width, page.y + page.height, 0.0f).method_22913(1.0f, 0.0f).method_39415(c);
+                pb.method_56824(page.entry, page.x + page.width, page.y, 0.0f).method_22913(1.0f, 1.0f).method_39415(c);
+                pb.method_56824(page.entry, page.x, page.y, 0.0f).method_22913(0.0f, 1.0f).method_39415(c);
+                BufferRenderer.drawWithGlobalProgram(pb.method_60800());
+            }
+            LegacyRenderSystem.enableCull();
+            LegacyRenderSystem.disableBlend();
+            PAGE.clear();
+        }
         if (!TEXTURE.isEmpty()) {
             LegacyRenderSystem.enableBlend();
             LegacyRenderSystem.disableDepthTest();
@@ -1749,6 +1771,11 @@ implements QuickImports {
         } else {
             TEXTURE.add(texture);
         }
+    }
+
+    /** A flat panel showing the whole texture the right way up: (x, y) is the bottom-left corner, y goes up. */
+    public static void drawPage(class_4587.class_4665 entry, class_2960 id, float x, float y, float width, float height, int color) {
+        PAGE.add(new Texture(entry, id, x, y, width, height, new Vector4i(color), false));
     }
 
     public static void drawTextureAlpha(class_4587.class_4665 entry, class_2960 id, float x, float y, float width, float height, Vector4i color, boolean depth) {

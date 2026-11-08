@@ -487,6 +487,49 @@ extends Module {
         }
     }
 
+    /**
+     * Draws this rain for the Atmosphere module (Rain/Storm modes) while the Rain module itself is off.
+     * The user's Rain settings are kept; only preset, lightning and the "only when raining" check are overridden.
+     */
+    public void renderForAtmosphere(WorldRenderEvent event, boolean storm, float amount) {
+        if (this.isState()) {
+            return;   // the Rain module is on and draws by itself
+        }
+        String oldPreset = this.preset.getSelected();
+        boolean oldLightning = this.lightning.isValue();
+        boolean oldOnlyRaining = this.onlyWhenRaining.isValue();
+        float oldDensity = this.density.getValue();
+        try {
+            this.preset.setSelected(storm ? "Storm" : "Downpour");
+            this.lightning.setValue(storm);
+            this.onlyWhenRaining.setValue(false);
+            this.density.setValue(Math.max(0.1f, Math.min(3.0f, amount)));
+            if (++this.cacheTicks > 60) {
+                this.cacheTicks = 0;
+                this.groundCache.clear();
+            }
+            this.onWorldRender(event);
+        } finally {
+            this.preset.setSelected(oldPreset);
+            this.lightning.setValue(oldLightning);
+            this.onlyWhenRaining.setValue(oldOnlyRaining);
+            this.density.setValue(oldDensity);
+        }
+    }
+
+    /** Clears drops left over from Atmosphere rain. */
+    public void clearForAtmosphere() {
+        if (!this.isState()) {
+            this.clearAll();
+            this.lastFrameNanos = 0L;
+        }
+    }
+
+    /** Current lightning flash (0..1), used by Atmosphere to light up the screen. */
+    public float getFlash() {
+        return this.flash;
+    }
+
     private void updateLightning(float dt) {
         if (!this.lightning.isValue()) {
             this.flash = 0.0f;

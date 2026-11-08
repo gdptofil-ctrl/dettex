@@ -4,11 +4,8 @@
  * Could not load the following classes:
  *  com.google.gson.JsonElement
  *  com.google.gson.JsonParser
- *  net.minecraft.class_1309
  *  net.minecraft.class_1799
- *  net.minecraft.class_1802
  *  net.minecraft.class_2960
- *  net.minecraft.class_310
  *  net.minecraft.class_9280
  *  net.minecraft.class_9334
  */
@@ -24,52 +21,27 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.class_1309;
 import net.minecraft.class_1799;
-import net.minecraft.class_1802;
 import net.minecraft.class_2960;
-import net.minecraft.class_310;
 import net.minecraft.class_9280;
 import net.minecraft.class_9334;
-import ru.recoin.implement.features.modules.render.cosmetics.Cosmetics;
 
 public final class CosmeticWeaponModels {
     private static final class_2960 SWORD = class_2960.method_60655((String)"recoin", (String)"cosmetics/sword");
     private static final class_2960 MACE = class_2960.method_60655((String)"recoin", (String)"cosmetics/mace");
-    private static final class_2960 CROSSBOW = class_2960.method_60655((String)"recoin", (String)"cosmetics/crossbow");
     private static final Map<String, class_9280> SWORDS = CosmeticWeaponModels.load(SWORD);
     private static final Map<String, class_9280> MACES = CosmeticWeaponModels.load(MACE);
-    private static final Map<String, class_9280> CROSSBOWS = CosmeticWeaponModels.load(CROSSBOW);
 
     private CosmeticWeaponModels() {
     }
 
     public static boolean isCosmeticModel(class_1799 stack) {
         class_2960 model = (class_2960)stack.method_58694(class_9334.field_54199);
-        return SWORD.equals((Object)model) || MACE.equals((Object)model) || CROSSBOW.equals((Object)model);
+        return SWORD.equals((Object)model) || MACE.equals((Object)model);
     }
 
     public static class_1799 apply(class_1799 stack, String selected, boolean mace) {
         return CosmeticWeaponModels.apply(stack, selected, mace ? MACE : SWORD, mace ? MACES : SWORDS);
-    }
-
-    public static class_1799 applyCrossbow(class_1799 stack, String selected) {
-        return CosmeticWeaponModels.apply(stack, selected, CROSSBOW, CROSSBOWS);
-    }
-
-    public static boolean shouldReplaceCrossbow(class_1799 stack, class_1309 owner) {
-        if (!stack.method_31574(class_1802.field_8399)) {
-            return false;
-        }
-        if (CROSSBOW.equals(stack.method_58694(class_9334.field_54199))) {
-            return true;
-        }
-        Cosmetics cosmetics = Cosmetics.getInstance();
-        if (cosmetics == null || !cosmetics.isState() || !cosmetics.getCrossbowsEnabled().isValue()) {
-            return false;
-        }
-        String selected = cosmetics.getCrossbowModel().getSelected();
-        return selected != null && CROSSBOWS.containsKey(selected) && (!cosmetics.getCrossbowsSelfOnly().isValue() || owner == class_310.method_1551().field_1724);
     }
 
     private static class_1799 apply(class_1799 stack, String selected, class_2960 model, Map<String, class_9280> models) {

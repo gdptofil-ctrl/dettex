@@ -60,7 +60,7 @@ extends Module {
     private final Set<Integer> attemptedSlots = new HashSet<Integer>();
 
     public AutoSell() {
-        super("AutoSell", "Auto Sell", ModuleCategory.MISC);
+        super("AutoSell", "Auto Sell", ModuleCategory.PVE);
         this.setup(this.source, this.resourceAnarchy, this.sellAnarchy, this.trashAnarchy, this.relistUnsold);
     }
 

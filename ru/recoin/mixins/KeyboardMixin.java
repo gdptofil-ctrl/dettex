@@ -31,7 +31,7 @@ import ru.recoin.api.event.EventManager;
 import ru.recoin.api.feature.module.Module;
 import ru.recoin.core.Main;
 import ru.recoin.implement.events.keyboard.KeyEvent;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 import ru.recoin.implement.screens.menu.MenuScreen;
 
 @Mixin(value={class_309.class})
@@ -44,7 +44,7 @@ public class KeyboardMixin {
     private void onKey(long window, int action, class_11908 input, CallbackInfo ci) {
         int key = input.comp_4795();
         if (key != -1 && window == this.field_1678.method_22683().method_4490()) {
-            if (SelfDestruct.isLocked()) {
+            if (Unhook.isLocked()) {
                 return;
             }
             if (action == 0 && key == this.getClickGuiKey()) {

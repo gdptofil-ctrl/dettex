@@ -129,7 +129,7 @@ extends Module {
     private boolean isEating;
 
     public AnchorFarming() {
-        super("Anchor Farming", "Anchor Farming", ModuleCategory.MISC);
+        super("Anchor Farming", "Anchor Farming", ModuleCategory.PVE);
         this.setup(this.rtpCommand, this.sellCommand, this.scanRadius, this.rtpTimeoutMin, this.autoEat, this.esp);
     }
 

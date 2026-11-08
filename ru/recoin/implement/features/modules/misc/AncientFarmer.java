@@ -113,7 +113,7 @@ extends Module {
     private boolean consuming;
 
     public AncientFarmer() {
-        super("AncientFarmer", "Ancient Farmer", ModuleCategory.MISC);
+        super("AncientFarmer", "Ancient Farmer", ModuleCategory.PVE);
         this.setup(this.searchMode);
     }
 

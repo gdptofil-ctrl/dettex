@@ -42,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.recoin.implement.features.modules.misc.PvPSafe;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 
 @Mixin(value={class_433.class})
 public abstract class GameMenuScreenMixin
@@ -56,7 +56,7 @@ extends class_437 {
 
     @Inject(method={"method_20543"}, at={@At(value="TAIL")})
     private void recoin$addReconnectButton(CallbackInfo ci) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return;
         }
         class_310 client = class_310.method_1551();

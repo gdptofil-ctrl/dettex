@@ -65,14 +65,16 @@ public final class TelegramAPI
 extends Module {
     private final TextSetting token = new TextSetting("Bot Token", "\u0422\u043e\u043a\u0435\u043d \u043e\u0442 BotFather").setText("").setMax(256).visible(() -> false);
     private final BooleanSetting saleReports = new BooleanSetting("\u041e\u0442\u0447\u0451\u0442\u044b AutoSell", "\u041f\u0440\u0438\u0441\u044b\u043b\u0430\u0442\u044c \u0441\u0443\u043c\u043c\u0443 \u043f\u0440\u043e\u0434\u0430\u0436 \u0438 \u0431\u0430\u043b\u0430\u043d\u0441").setValue(true);
+    private final BooleanSetting newKey = new BooleanSetting("New Key", "\u041e\u0442\u0432\u044f\u0437\u0430\u0442\u044c Telegram \u0438 \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u043d\u043e\u0432\u044b\u0439 \u043a\u043b\u044e\u0447").setValue(false);
     private final AtomicBoolean running = new AtomicBoolean();
+    private boolean relinkPending;
     private final Set<String> chats = ConcurrentHashMap.newKeySet();
     private Thread pollingThread;
     private long updateOffset;
 
     public TelegramAPI() {
         super("TelegramAPI", "Telegram API", ModuleCategory.MISC);
-        this.setup(this.token, this.saleReports);
+        this.setup(this.token, this.saleReports, this.newKey);
     }
 
     public static TelegramAPI getInstance() {
@@ -94,13 +96,37 @@ extends Module {
 
     @Override
     public void activate() {
-        // INTERNET DISABLED FOR SECURITY
-        this.setState(false);
-        return;
+        // Link through @dettexclient_bot: key from the Dettex server -> sent to the bot -> confirmed.
+        // The bot token is kept on the server only (sync-server/tg.js), never in the client.
+        TelegramLink.start(this.playerName());
+    }
+
+    private String playerName() {
+        try {
+            return mc.method_1548().method_1676();
+        } catch (Throwable e) {
+            return "player";
+        }
+    }
+
+    @EventHandler
+    public void onTick(ru.recoin.implement.events.player.TickEvent event) {
+        if (this.newKey.isValue()) {
+            this.newKey.setValue(false);
+            TelegramLink.unlink();
+            TelegramLink.stop();
+            this.relinkPending = true;
+        }
+        if (this.relinkPending && !TelegramLink.busy()) {
+            this.relinkPending = false;
+            TelegramLink.start(this.playerName());
+        }
     }
 
     @Override
     public void deactivate() {
+        TelegramLink.stop();
+        this.relinkPending = false;
         this.running.set(false);
         if (this.pollingThread != null) {
             this.pollingThread.interrupt();
@@ -291,12 +317,10 @@ extends Module {
     }
 
     private void sendMessage(String text) {
-        if (text == null || text.isBlank() || !this.running.get()) {
+        if (text == null || text.isBlank() || !TelegramLink.linked()) {
             return;
         }
-        for (String chat : this.chats) {
-            this.sendMessage(chat, text);
-        }
+        TelegramLink.send(this.limit(text));   // to the chat linked through @dettexclient_bot
     }
 
     private boolean validateBotConnection() {
@@ -324,8 +348,15 @@ extends Module {
         }
     }
 
+    public void sendSwordWarmReport(String text) {
+        if (text == null || text.isBlank() || !TelegramLink.linked()) {
+            return;
+        }
+        this.sendMessage(text);
+    }
+
     private void sendMessage(String chat, String text) {
-        // INTERNET DISABLED
+        TelegramLink.send(text);
     }
 
     private void sendPhoto(Path path) throws Exception {

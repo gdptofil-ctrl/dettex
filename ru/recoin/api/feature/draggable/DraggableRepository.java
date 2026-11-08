@@ -13,6 +13,7 @@ import ru.recoin.implement.features.draggables.CoolDowns;
 import ru.recoin.implement.features.draggables.HotBar;
 import ru.recoin.implement.features.draggables.HotKeys;
 import ru.recoin.implement.features.draggables.Inventory;
+import ru.recoin.implement.features.draggables.Lyrics;
 import ru.recoin.implement.features.draggables.MediaPlayer;
 import ru.recoin.implement.features.draggables.Notifications;
 import ru.recoin.implement.features.draggables.OpponentCooldownsHud;
@@ -28,7 +29,7 @@ public class DraggableRepository {
     private final Map<Class<?>, AbstractDraggable> classMap = new HashMap();
 
     public void setup() {
-        this.register(new TargetHud(), new Potions(), new HotKeys(), new Armor(), new Watermark(), new Inventory(), new CoolDowns(), new OpponentCooldownsHud(), new ServerHelperBinds(), new StaffList(), new Notifications(), new MediaPlayer(), new HotBar());
+        this.register(new TargetHud(), new Potions(), new HotKeys(), new Armor(), new Watermark(), new Inventory(), new CoolDowns(), new OpponentCooldownsHud(), new ServerHelperBinds(), new StaffList(), new Notifications(), new MediaPlayer(), new HotBar(), new Lyrics());
     }
 
     public synchronized void register(AbstractDraggable ... module) {

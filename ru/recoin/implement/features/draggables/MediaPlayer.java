@@ -57,6 +57,7 @@ import ru.recoin.common.util.render.Render2DUtil;
 import ru.recoin.common.util.render.ScissorManager;
 import ru.recoin.core.Main;
 import ru.recoin.implement.features.modules.render.Hud;
+import ru.recoin.implement.features.modules.render.MusicHud;
 import ru.recoin.implement.features.modules.render.NewHud;
 
 public class MediaPlayer
@@ -83,6 +84,7 @@ extends AbstractDraggable {
     private volatile long mediaFetchedAtMs = System.currentTimeMillis();
     private volatile class_2960 artwork;
     private volatile boolean artworkReady;
+    private volatile boolean hasRealMedia;
     private final StopWatch lastMedia = new StopWatch();
     private volatile int lastArtworkHash;
     private int emptyArtworkTicks;
@@ -109,6 +111,21 @@ extends AbstractDraggable {
         return thread2;
     });
 
+    /** Track last read from the system media session (used by Music HUD). */
+    public MediaInfo currentMedia() {
+        return this.mediaInfo;
+    }
+
+    /** When currentMedia() was read; its position is in whole seconds at that moment. */
+    public long mediaFetchedAt() {
+        return this.mediaFetchedAtMs;
+    }
+
+    /** True while a real media session was seen in the last 3 seconds. */
+    public boolean hasFreshMedia() {
+        return this.hasRealMedia && !this.lastMedia.finished(3000.0);
+    }
+
     public static MediaPlayer getInstance() {
         return Instance.getDraggable(MediaPlayer.class);
     }
@@ -131,7 +148,7 @@ extends AbstractDraggable {
         if (!this.lastNativeCall.finished(750.0) || !this.nativeRequestPending.compareAndSet(false, true)) {
             return;
         }
-        if (Hud.getInstance() != null && Hud.getInstance().isState() && Hud.getInstance().interfaceSettings.isSelected("Media Player")) {
+        if (Hud.getInstance() != null && Hud.getInstance().isState() && Hud.getInstance().interfaceSettings.isSelected("Media Player") || MusicHud.needsMedia()) {
             this.lastNativeCall.reset();
             this.executorService.submit(() -> {
                 try {
@@ -150,6 +167,7 @@ extends AbstractDraggable {
                     if (fallback != null) {
                         this.mediaInfo = fallback;
                         this.mediaFetchedAtMs = System.currentTimeMillis();
+                        this.hasRealMedia = true;
                         this.updateArtwork(fallback);
                         this.lastMedia.reset();
                     }

@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.recoin.api.event.EventManager;
 import ru.recoin.implement.events.chat.TabCompleteEvent;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 
 @Mixin(value={class_4717.class})
 public class ChatInputSuggestorMixin {
@@ -59,7 +59,7 @@ public class ChatInputSuggestorMixin {
 
     @Inject(method={"method_23934"}, at={@At(value="HEAD")}, cancellable=true)
     private void preUpdateSuggestion(CallbackInfo ci) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             ci.cancel();
             this.field_21610 = null;
             this.field_21599.method_1887(null);

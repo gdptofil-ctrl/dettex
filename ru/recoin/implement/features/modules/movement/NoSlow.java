@@ -59,7 +59,7 @@ extends Module {
         this.grimTicksCancel = false;
         if (this.itemMode.isSelected("Grim Ticks") && NoSlow.mc.field_1724 != null && NoSlow.mc.field_1687 != null && !NoSlow.mc.field_1724.method_6128() && NoSlow.mc.field_1724.method_6115() && this.grimTicksWatch.finished(125.0)) {
             this.grimTicksCancel = true;
-            NoSlow.mc.field_1724.field_3944.method_52787((class_2596)new class_2886(class_1268.field_5808, 0, NoSlow.mc.field_1724.method_36454(), NoSlow.mc.field_1724.method_36455()));
+            PlayerIntersectionUtil.interactItemVanilla(class_1268.field_5808);
             this.grimTicksWatch.reset();
         }
         if (NoSlow.mc.field_1724 != null && NoSlow.mc.field_1724.method_6115() && !NoSlow.mc.field_1724.method_6128()) {

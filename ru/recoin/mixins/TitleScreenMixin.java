@@ -19,14 +19,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 import ru.recoin.implement.screens.mainmenu.RecoinMainMenuScreen;
 
 @Mixin(value={class_442.class})
 public abstract class TitleScreenMixin {
     @Inject(method={"method_25426"}, at={@At(value="HEAD")}, cancellable=true)
     private void recoin$openMainMenu(CallbackInfo ci) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return;
         }
         ci.cancel();

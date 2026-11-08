@@ -133,7 +133,7 @@ extends Module {
     private boolean potionDepositPending;
 
     public AutoFarm() {
-        super("AutoFarm", "Auto Farm", ModuleCategory.PLAYER);
+        super("AutoFarm", "Auto Farm", ModuleCategory.PVE);
         this.setup(this.mode, this.swordPrice, this.swordRelistCooldown, this.swordCraftAll, this.potionType, this.potionStackMode, this.potionEnhance, this.potionUseChests, this.potionTargetEsp, this.potionDelay, this.combinerPotions, this.combinerAutoOpen, this.combinerAutoExp, this.combinerRefillTo, this.autoSellQuantity, this.autoSellPrice, this.autoSellRelistCooldown, this.autoSellConfirm, this.cropType, this.cropScanRadius, this.cropVerticalRange, this.cropReplant, this.cropUseBonemeal, this.cropPickup, this.cropAutoDeposit, this.cropTargetEsp, this.cropActionDelay);
     }
 

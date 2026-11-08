@@ -13,7 +13,7 @@ import ru.recoin.common.util.other.Instance;
 
 public final class CustomMace
 extends Module {
-    private static final String[] WEAPONS = new String[]{"Abominable Scythe", "Arcanethyst", "Bloody Death", "Crescent Rose", "Demigod's Unholy Blade", "Demigod's Unholy Halberd", "Demon Lord's Great Axe", "Divine Axe Rhitta", "Divine Reaper", "Icewhisper", "Magi Scythe", "Requiem of the Ninth Abyss", "Wraith Scythe"};
+    private static final String[] WEAPONS = new String[]{"Abominable Scythe", "Arcanethyst", "Bloody Death", "Crescent Rose", "Demigod's Unholy Blade", "Demigod's Unholy Halberd", "Demon Lord's Great Axe", "Divine Axe Rhitta", "Divine Reaper", "Icewhisper", "Magi Scythe", "Requiem of the Ninth Abyss", "Wraith Scythe", "Frost Axe", "Frost Scythe", "3D Mace", "Warhammer", "Toothed Macuahuitl", "Makeshift Macuahuitl", "Photon Axe", "Old World Axe"};
     private static final String[] DISPLAY_WEAPONS = CustomMace.displayNames();
     private static CustomMace instance;
     private final BooleanSetting selfOnly = new BooleanSetting("\u0422\u043e\u043b\u044c\u043a\u043e \u0441\u0432\u043e\u0439", "\u0417\u0430\u043c\u0435\u043d\u044f\u0442\u044c \u043c\u043e\u0434\u0435\u043b\u044c \u0431\u0443\u043b\u0430\u0432\u044b \u0442\u043e\u043b\u044c\u043a\u043e \u0443 \u0441\u0432\u043e\u0435\u0433\u043e \u0438\u0433\u0440\u043e\u043a\u0430").setValue(true);

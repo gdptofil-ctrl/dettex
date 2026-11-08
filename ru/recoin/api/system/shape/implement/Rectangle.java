@@ -84,6 +84,24 @@ QuickImports {
         }
     }
 
+    /** Hud 3 neon frame: soft animated theme glow plus a thin gradient outline around the shape. */
+    public void renderNeonFrame(ShapeProperties shape) {
+        if (Render2DUtil.getRenderAlpha() <= 0.0f) {
+            return;
+        }
+        try {
+            Bounds bounds = this.bounds(shape);
+            if (bounds.width <= 0.0f || bounds.height <= 0.0f) {
+                return;
+            }
+            this.drawThemeShadow(bounds, shape);
+            this.drawGradientLayer(bounds, shape, 0.6f, 0.85f);
+        }
+        catch (RuntimeException ignored) {
+            // decoration only
+        }
+    }
+
     private boolean shouldDecorate(ShapeProperties shape, Bounds bounds) {
         return false;
     }

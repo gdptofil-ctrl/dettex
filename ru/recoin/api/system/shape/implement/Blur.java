@@ -35,6 +35,7 @@ import ru.recoin.common.util.render.pipeline.StyledBlurPipeline;
 import ru.recoin.compat.render.BufferRenderer;
 import ru.recoin.compat.render.GlStateManager;
 import ru.recoin.implement.features.modules.render.Hud;
+import ru.recoin.implement.features.modules.render.Holiday;
 import ru.recoin.implement.screens.mainmenu.RecoinMainMenuScreen;
 import ru.recoin.implement.screens.menu.MenuScreen;
 
@@ -63,13 +64,25 @@ QuickImports {
         if (Render2DUtil.getRenderAlpha() <= 0.0f) {
             return;
         }
+        boolean hudPanel = this.isHudContext() && !this.isGuiContext() && !this.isSplitHudPanel(shape);
+        if (hudPanel && Hud.getInstance().isHud3() && shape.getWidth() > 10.0f && shape.getHeight() > 8.0f) {
+            this.renderHud3(shape);
+            Holiday.decoratePanel(shape);
+            return;
+        }
         if (this.isHudContext() && !this.isGuiContext() && Hud.getInstance().shouldUseSimpleHudPanels()) {
             this.renderSolid(shape);
+            if (hudPanel) {
+                Holiday.decoratePanel(shape);
+            }
             return;
         }
         this.renderShadow(shape);
         if (this.renderDirect(shape)) {
             this.renderOutline(shape);
+            if (hudPanel) {
+                Holiday.decoratePanel(shape);
+            }
             return;
         }
         this.setup();
@@ -90,6 +103,18 @@ QuickImports {
         drawEngine.quad(matrix4f, buffer, shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight(), shape.getColor().x);
         GlStateManager._activeTexture(33984);
         BufferRenderer.drawWithGlobalProgram(buffer.method_60800());
+    }
+
+    /** Hud 3: rounder, darker glass panel with an animated neon glow and gradient outline in the theme colours. */
+    private void renderHud3(ShapeProperties shape) {
+        float radius = Math.min(shape.getHeight() / 2.0f, Math.max(7.0f, shape.getRound().x));
+        ShapeProperties glass = shape.toBuilder().round(radius).color(ColorUtil.getColor(8, 8, 14, 0.62f)).build();
+        rectangle.renderNeonFrame(glass);
+        if (!this.renderDirect(glass)) {
+            this.renderSolid(glass);
+        }
+        // a faint highlight along the top edge sells the glass look
+        rectangle.render(glass.toBuilder().height(Math.min(glass.getHeight() * 0.45f, 9.0f)).round(radius, 0.0f, radius, 0.0f).color(ColorUtil.getColor(255, 255, 255, 0.045f)).build());
     }
 
     private boolean renderSolid(ShapeProperties shape) {

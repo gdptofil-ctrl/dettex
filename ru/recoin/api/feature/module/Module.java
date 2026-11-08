@@ -52,6 +52,10 @@ implements QuickImports {
     }
 
     public void setState(boolean state) {
+        if (state && !this.state && !ru.recoin.core.license.LicenseGate.get().ok()) {
+            ru.recoin.core.license.LicenseGate.get().denyToggle(this.visibleName);
+            return;   // no valid licence: the module stays off
+        }
         this.animation.setDirection(state ? Direction.FORWARDS : Direction.BACKWARDS);
         if (state != this.state) {
             this.state = state;

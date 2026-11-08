@@ -40,6 +40,7 @@ import ru.recoin.api.feature.module.Module;
 import ru.recoin.api.feature.module.ModuleCategory;
 import ru.recoin.api.feature.module.setting.implement.BooleanSetting;
 import ru.recoin.api.feature.module.setting.implement.SelectSetting;
+import ru.recoin.common.util.entity.PlayerIntersectionUtil;
 import ru.recoin.common.util.other.Instance;
 import ru.recoin.implement.events.packet.PacketEvent;
 import ru.recoin.implement.events.player.InputEvent;
@@ -110,7 +111,6 @@ extends Module {
             return;
         }
         if (this.correctionCooldown > 0) {
-            --this.correctionCooldown;
             return;
         }
         switch (this.mode.getSelected()) {
@@ -154,6 +154,9 @@ extends Module {
             return;
         }
         if (this.mode.isSelected("Grim")) {
+            if (this.correctionCooldown > 0) {
+                --this.correctionCooldown;
+            }
             this.handleGrimTick();
             return;
         }
@@ -180,8 +183,8 @@ extends Module {
             return;
         }
         if (this.correctionCooldown <= 0) {
-            Velocity.mc.field_1724.field_3944.method_52787((class_2596)new class_2828.class_2830(Velocity.mc.field_1724.method_23317(), Velocity.mc.field_1724.method_23318(), Velocity.mc.field_1724.method_23321(), Velocity.mc.field_1724.method_36454(), Velocity.mc.field_1724.method_36455(), Velocity.mc.field_1724.method_24828(), Velocity.mc.field_1724.field_5976));
-            Velocity.mc.field_1724.field_3944.method_52787((class_2596)new class_2846(class_2846.class_2847.field_12973, class_2338.method_49638((class_2374)Velocity.mc.field_1724.method_73189()), class_2350.field_11033));
+            PlayerIntersectionUtil.grimSuperBypass$$$(0.0, RotationController.INSTANCE.getServerAngle());
+            PlayerIntersectionUtil.sendSequencedPacket(sequence -> new class_2846(class_2846.class_2847.field_12973, class_2338.method_49638((class_2374)Velocity.mc.field_1724.method_73189()), class_2350.field_11033, sequence));
         }
         this.velocityFlag = false;
     }

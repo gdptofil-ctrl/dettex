@@ -266,7 +266,7 @@ extends Module {
     private boolean storageSelectionPending;
 
     public AutoWarden() {
-        super("AutoWarden", "Auto Warden", ModuleCategory.MISC);
+        super("AutoWarden", "Auto Warden", ModuleCategory.PVE);
         this.setup(this.useSpeed, this.reportOffenders, this.lootPriority, this.debug, this.baseAnarchy, this.farmAnarchies, this.learnedSupplyChests, this.learnedLootChests);
     }
 

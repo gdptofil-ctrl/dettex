@@ -44,7 +44,7 @@ extends Module {
     private transient int nextPlayer;
 
     public AutoDuel() {
-        super("AutoDuel", "Auto Duel", ModuleCategory.MISC);
+        super("AutoDuel", "Auto Duel", ModuleCategory.PVE);
         this.setup(this.mode, this.disableBind);
     }
 

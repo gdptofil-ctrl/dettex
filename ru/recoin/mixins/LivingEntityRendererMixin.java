@@ -67,7 +67,7 @@ import ru.recoin.implement.events.render.EntityColorEvent;
 import ru.recoin.implement.features.modules.combat.killaura.rotation.RotationController;
 import ru.recoin.implement.features.modules.render.EntityESP;
 import ru.recoin.implement.features.modules.render.ShaderESP;
-import ru.recoin.implement.features.modules.render.custommodels.CustomPlayerModelRenderer;
+import ru.recoin.implement.features.modules.render.cosmetics.CosmeticPlayerModels;
 
 @Mixin(value={class_922.class})
 public abstract class LivingEntityRendererMixin
@@ -138,7 +138,7 @@ implements QuickImports {
             if (submittedState instanceof ICustomPlayerModelState && (customState = (ICustomPlayerModelState)submittedState).recoin$hasCustomModel() && model instanceof class_591) {
                 class_591 playerModel = (class_591)model;
                 playerModel.method_62110(playerState);
-                if (CustomPlayerModelRenderer.render(customState.recoin$getCustomModel(), playerModel, playerState, matrices, queue, light, overlay, color, outlineColor)) {
+                if (CosmeticPlayerModels.render(customState.recoin$getCustomModel(), playerModel, playerState, matrices, queue, light, overlay)) {
                     return;
                 }
             }

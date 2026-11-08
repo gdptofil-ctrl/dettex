@@ -30,9 +30,10 @@ import ru.recoin.implement.features.modules.render.esp.SwordTargetESP;
 
 public class TargetESP
 extends Module {
-    private final SelectSetting mode = new SelectSetting("Mode", "Selects the target esp style").value("Ghosts", "Cube", "Crystals", "Circle", "Black Flash", "Bloom", "Swords", "\u041c\u043e\u043b\u043d\u0438\u0438").selected("Ghosts");
+    private final SelectSetting mode = new SelectSetting("Mode", "Selects the target esp style").value("Ghosts", "Cube", "Crystals", "Circle", "Black Flash", "Bloom", "Swords", "\u041c\u043e\u043b\u043d\u0438\u0438", "Helix", "Atom", "Pulse").selected("Ghosts");
     private final SelectSetting cubeType = new SelectSetting("Cube Type", "Selects the cube style").value("\u0412\u0438\u0434 1", "\u0412\u0438\u0434 2").selected("\u0412\u0438\u0434 1").visible(() -> this.mode.isSelected("Cube"));
     private final SelectSetting ghostType = new SelectSetting("Ghost Type", "Selects the ghost style").value("\u0412\u0438\u0434 1", "\u0412\u0438\u0434 2", "\u0412\u0438\u0434 3").selected("\u0412\u0438\u0434 1").visible(() -> this.mode.isSelected("Ghosts"));
+    private final ValueSetting animSpeed = new ValueSetting("Animation Speed", "Speed of Helix / Atom / Pulse").setValue(1.0f).range(0.3f, 3.0f).visible(() -> this.mode.isSelected("Helix") || this.mode.isSelected("Atom") || this.mode.isSelected("Pulse"));
     private final ValueSetting ghostSpeed = new ValueSetting("Ghost Speed", "Speed of ghost flying around the target").setValue(1.0f).range(0.5f, 2.0f).visible(() -> this.mode.isSelected("Ghosts"));
     private final ValueSetting crystalDistortion = new ValueSetting("\u0418\u0441\u043a\u0430\u0436\u0435\u043d\u0438\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432", "\u0421\u0438\u043b\u0430 \u043f\u0440\u0435\u043b\u043e\u043c\u043b\u0435\u043d\u0438\u044f \u0436\u0438\u0434\u043a\u043e\u0433\u043e \u0441\u0442\u0435\u043a\u043b\u0430 \u0432\u043e\u043a\u0440\u0443\u0433 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432").setValue(1.0f).range(0.1f, 3.0f).step(0.05f).visible(() -> this.mode.isSelected("Crystals"));
     private final ValueSetting bloomParticleCount = new ValueSetting("Bloom Particle Count", "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0447\u0430\u0441\u0442\u0438\u0446 \u0432\u043e\u043a\u0440\u0443\u0433 \u0446\u0435\u043b\u0438").range(1, 64).setValue(36.0f).visible(() -> this.mode.isSelected("Bloom") || this.mode.isSelected("\u0411\u043b\u0443\u043c"));
@@ -51,7 +52,7 @@ extends Module {
 
     public TargetESP() {
         super("TargetESP", "Target ESP", ModuleCategory.RENDER);
-        this.setup(this.mode, this.cubeType, this.ghostType, this.ghostSpeed, this.crystalDistortion, this.bloomParticleCount);
+        this.setup(this.mode, this.cubeType, this.ghostType, this.ghostSpeed, this.animSpeed, this.crystalDistortion, this.bloomParticleCount);
     }
 
     @Override
@@ -129,6 +130,18 @@ extends Module {
             case "Bloom": 
             case "\u0411\u043b\u0443\u043c": {
                 this.bloomTargetESP.render(event.getStack(), tickDelta, this.lastTarget, anim, this.hitAnim, this.bloomParticleCount.getInt());
+                break;
+            }
+            case "Helix": {
+                ru.recoin.implement.features.modules.render.esp.AnimatedTargetESP.helix(this.lastTarget, anim, this.hitAnim, this.animSpeed.getValue());
+                break;
+            }
+            case "Atom": {
+                ru.recoin.implement.features.modules.render.esp.AnimatedTargetESP.atom(this.lastTarget, anim, this.hitAnim, this.animSpeed.getValue());
+                break;
+            }
+            case "Pulse": {
+                ru.recoin.implement.features.modules.render.esp.AnimatedTargetESP.pulse(this.lastTarget, anim, this.hitAnim, this.animSpeed.getValue());
                 break;
             }
             case "Swords": {

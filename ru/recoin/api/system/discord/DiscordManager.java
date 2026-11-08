@@ -48,14 +48,40 @@ public class DiscordManager {
                 System.out.println("Discord RPC IPC connected");
             }
             JsonObject activity = new JsonObject();
-            activity.addProperty("details", "DettexClient 1.21.11");
-            activity.addProperty("state", "UID: " + UserProfile.getUidString());
+            String role = "PLAYER";
+            int daysLeft = -1;
+            try {
+                Object gate = Class.forName("ru.recoin.core.license.LicenseGate").getMethod("get").invoke(null);
+                if (gate != null) {
+                    Object state = gate.getClass().getField("state").get(gate);
+                    if (state != null) {
+                        try {
+                            Object rt = state.getClass().getField("rankText").get(state);
+                            if (rt != null) role = String.valueOf(rt);
+                        } catch (Throwable ignored) {}
+                        try {
+                            int r = state.getClass().getField("rank").getInt(state);
+                            if ("PLAYER".equals(role)) {
+                                if (r == 3) role = "ADMIN";
+                                else if (r == 2) role = "ADMINISTRATOR";
+                                else if (r == 1) role = "MEDIA";
+                            }
+                        } catch (Throwable ignored) {}
+                        try {
+                            daysLeft = state.getClass().getField("daysLeft").getInt(state);
+                        } catch (Throwable ignored) {}
+                    }
+                }
+            } catch (Throwable ignored) {}
+            String roleUp = role.toUpperCase();
+            activity.addProperty("details", "DettexClient | " + roleUp + (daysLeft >= 0 ? " | " + daysLeft + "d" : ""));
+            activity.addProperty("state", "UID: " + UserProfile.getUidString() + " | Владелец");
             JsonObject timestamps = new JsonObject();
             timestamps.addProperty("start", (Number)this.startTimestamp);
             activity.add("timestamps", (JsonElement)timestamps);
             JsonObject assets = new JsonObject();
-            assets.addProperty("large_image", "dettex");
-            assets.addProperty("large_text", "DettexClient | UID: " + UserProfile.getUid());
+            assets.addProperty("large_image", "dettexlogo");
+            assets.addProperty("large_text", "DettexClient | UID: " + UserProfile.getUid() + " | " + roleUp + (daysLeft >= 0 ? " | " + daysLeft + " дней" : ""));
             activity.add("assets", (JsonElement)assets);
             JsonArray buttons = new JsonArray();
             JsonObject telegramButton = new JsonObject();

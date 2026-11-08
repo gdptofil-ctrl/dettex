@@ -107,7 +107,7 @@ extends Module {
     private Boolean previousAllowPlace;
 
     public AutoTrade() {
-        super("AutoTrade", "Auto Trade", ModuleCategory.MISC);
+        super("AutoTrade", "Auto Trade", ModuleCategory.PVE);
         this.setup(this.routePoint, this.storagePoint, this.resetPoints, this.buyItem, this.maxPrice, this.emeraldReserve, this.villagerRadius, this.delayMs, this.rescanCooldown, this.autoEmeralds, this.hideScreen);
     }
 

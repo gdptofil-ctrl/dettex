@@ -1,0 +1,158 @@
+{
+  "mace": [
+    {
+      "name": "Heavy Punch",
+      "sound": "recoin:events.mace_heavy_punch"
+    },
+    {
+      "name": "Metal",
+      "sound": "recoin:events.mace_metal"
+    },
+    {
+      "name": "Bell",
+      "sound": "recoin:events.mace_bell"
+    },
+    {
+      "name": "Armor Plate",
+      "sound": "recoin:events.mace_plate"
+    },
+    {
+      "name": "Crunch",
+      "sound": "recoin:events.mace_crunch"
+    },
+    {
+      "name": "Boom",
+      "sound": "recoin:events.mace_boom"
+    },
+    {
+      "name": "Smack",
+      "sound": "recoin:events.mace_smack"
+    },
+    {
+      "name": "Club",
+      "sound": "recoin:events.mace_wood"
+    }
+  ],
+  "totem": [
+    {
+      "name": "Combo Breaker",
+      "sound": "recoin:events.totem_combo_breaker"
+    },
+    {
+      "name": "Combo",
+      "sound": "recoin:events.totem_combo"
+    },
+    {
+      "name": "Glass",
+      "sound": "recoin:events.totem_glass"
+    },
+    {
+      "name": "Coin",
+      "sound": "recoin:events.totem_coin"
+    },
+    {
+      "name": "Power Up",
+      "sound": "recoin:events.totem_power_up"
+    },
+    {
+      "name": "Objective",
+      "sound": "recoin:events.totem_objective"
+    },
+    {
+      "name": "Jingle",
+      "sound": "recoin:events.totem_jingle"
+    },
+    {
+      "name": "Chips",
+      "sound": "recoin:events.totem_chips"
+    }
+  ],
+  "kill": [
+    {
+      "name": "Multi Kill",
+      "sound": "recoin:events.kill_multi_kill"
+    },
+    {
+      "name": "Flawless Victory",
+      "sound": "recoin:events.kill_flawless"
+    },
+    {
+      "name": "Winner",
+      "sound": "recoin:events.kill_winner"
+    },
+    {
+      "name": "You Win",
+      "sound": "recoin:events.kill_you_win"
+    },
+    {
+      "name": "Target Destroyed",
+      "sound": "recoin:events.kill_target_destroyed"
+    },
+    {
+      "name": "Mission Completed",
+      "sound": "recoin:events.kill_mission_completed"
+    },
+    {
+      "name": "New Highscore",
+      "sound": "recoin:events.kill_highscore"
+    },
+    {
+      "name": "Fanfare",
+      "sound": "recoin:events.kill_fanfare"
+    },
+    {
+      "name": "Arcade Combo",
+      "sound": "recoin:events.kill_arcade_combo"
+    },
+    {
+      "name": "Bass Drop",
+      "sound": "recoin:events.kill_bass_drop"
+    },
+    {
+      "name": "Star Collect",
+      "sound": "recoin:events.kill_star_collect"
+    }
+  ],
+  "death": [
+    {
+      "name": "You Lose",
+      "sound": "recoin:events.death_you_lose"
+    },
+    {
+      "name": "Game Over",
+      "sound": "recoin:events.death_game_over"
+    },
+    {
+      "name": "Loser",
+      "sound": "recoin:events.death_loser"
+    },
+    {
+      "name": "Mission Failed",
+      "sound": "recoin:events.death_mission_failed"
+    },
+    {
+      "name": "Sudden Death",
+      "sound": "recoin:events.death_sudden_death"
+    },
+    {
+      "name": "Sad Sax",
+      "sound": "recoin:events.death_sad_sax"
+    },
+    {
+      "name": "Low Down",
+      "sound": "recoin:events.death_low_down"
+    },
+    {
+      "name": "Retro Fall",
+      "sound": "recoin:events.death_retro_fall"
+    },
+    {
+      "name": "Glitch Out",
+      "sound": "recoin:events.death_glitch_out"
+    },
+    {
+      "name": "Deflate",
+      "sound": "recoin:events.death_deflate"
+    }
+  ]
+}

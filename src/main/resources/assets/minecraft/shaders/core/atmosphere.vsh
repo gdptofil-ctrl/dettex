@@ -21,11 +21,11 @@ void main() {
     vUV = uv;
     vSun = vec4(0.0);
     if (uFogParams.y > 0.0) {
-        float angle = 1.5708;
-        vec3 sunDirection = vec3(-cos(angle), sin(angle), 0.0);
+        // real sun direction from the module (uScreen.zw); no rays once the sun is below the horizon
+        vec3 sunDirection = normalize(vec3(uScreen.z, uScreen.w, 0.0) + vec3(0.0, 0.00001, 0.0));
         vec3 viewDirection = transpose(mat3(uViewRot)) * sunDirection;
         vec4 projected = uProjection * vec4(viewDirection, 0.0);
-        if (projected.w > 0.0001) {
+        if (sunDirection.y > -0.05 && projected.w > 0.0001) {
             vec2 sunUV = projected.xy / projected.w * 0.5 + 0.5;
             float visibility = exp(-length(sunUV - vec2(0.5)) * 0.8);
             float strength = visibility * uFogParams.y * 0.006

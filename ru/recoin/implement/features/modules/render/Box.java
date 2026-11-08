@@ -75,7 +75,7 @@ extends Module {
             double halfX = box.method_17939() * 0.5;
             double dot = (box.field_1323 + halfX - camPos.field_1352) * (double)forward.x + (box.field_1322 + (halfY = box.method_17940() * 0.5) - camPos.field_1351) * (double)forward.y + (box.field_1321 + (halfZ = box.method_17941() * 0.5) - camPos.field_1350) * (double)forward.z;
             if (dot < -(extent = halfX * (double)Math.abs(forward.x) + halfY * (double)Math.abs(forward.y) + halfZ * (double)Math.abs(forward.z)) - 1.0 && entity != Box.mc.field_1724) continue;
-            Render3DUtil.drawBox(box, color, 1.5f, true, true, false);
+            Render3DUtil.drawBox(box, ru.recoin.implement.features.modules.render.hitcolor.HitColorHitbox.colorFor(entity, color), 1.5f, true, true, false);
         }
     }
 

@@ -211,7 +211,7 @@ public abstract class GameRendererMixin {
             Atmosphere atmosphere = Atmosphere.getInstance();
             Winter winter = Winter.getInstance();
             MotionBlur motionBlur = MotionBlur.getInstance();
-            boolean needsMatrices = wetWorld != null && wetWorld.isState() || atmosphere != null && atmosphere.isState() || winter != null && winter.isState() || motionBlur != null && motionBlur.isState();
+            boolean needsMatrices = wetWorld != null && wetWorld.isState() || atmosphere != null && atmosphere.isState() || winter != null && winter.isState() || motionBlur != null && motionBlur.isState() || ru.recoin.implement.features.modules.render.Shader.active();
             float fov = LegacyRenderSystem.getLastFov();
             if (fov <= 0.0f && this.field_4015.field_1690 != null) {
                 fov = ((Integer)this.field_4015.field_1690.method_41808().method_41753()).floatValue();
@@ -225,6 +225,7 @@ public abstract class GameRendererMixin {
                 Winter.render();
             }
             Atmosphere.render(proj);
+            ru.recoin.implement.features.modules.render.Shader.render(proj);
             MotionBlur.updateMatrices(viewMatrix, proj, camera);
             MotionBlur.render();
         }

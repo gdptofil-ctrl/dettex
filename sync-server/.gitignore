@@ -1,0 +1,6 @@
+node_modules/
+data.json
+.wrangler/
+tg-data.json
+.telegram-configured
+.license-configured

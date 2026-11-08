@@ -32,6 +32,12 @@ import ru.recoin.common.util.render.MatrixStackCompat;
 import ru.recoin.common.util.render.Render2DUtil;
 import ru.recoin.common.util.world.ServerUtil;
 import ru.recoin.implement.features.modules.render.Hud;
+import ru.recoin.implement.features.modules.render.MusicHud;
+import ru.recoin.implement.features.modules.render.music.PlaybackClock;
+import ru.recoin.common.util.other.StringUtil;
+import ru.recoin.common.util.render.ScissorManager;
+import ru.recoin.core.Main;
+import dev.redstones.mediaplayerinfo.MediaInfo;
 
 public class Watermark
 extends AbstractDraggable {
@@ -65,6 +71,11 @@ extends AbstractDraggable {
 
     @Override
     public void drawDraggable(class_332 drawContext) {
+        MusicHud music = MusicHud.getInstance();
+        if (music != null && music.replacesWatermark() && MusicHud.media() != null) {
+            this.drawMusic(drawContext, music, MusicHud.media(), Hud.getInstance().isHud2());
+            return;
+        }
         if (Hud.getInstance().isHud2()) {
             this.drawHud2(drawContext);
             return;
@@ -154,6 +165,76 @@ extends AbstractDraggable {
         this.drawPlayerInfo(matrix, font, iconFont, mainWidth);
         this.setWidth((int)Math.ceil(mainWidth));
         this.setHeight((int)Math.ceil(showBps && showCoords ? 34.0 : 16.0));
+    }
+
+    /** Music mode: logo + scrolling track text (+ time) + progress line, in place of name/FPS/ping. */
+    private void drawMusic(class_332 context, MusicHud music, MediaInfo info, boolean hud2) {
+        class_4587 matrix = MatrixStackCompat.from(context.method_51448());
+        Hud hud = Hud.getInstance();
+        int accent = hud.themeColor();
+        FontRenderer font = Fonts.getSize(hud2 ? 12 : 14, Fonts.Type.INTER_BOLD);
+        FontRenderer logoFont = Fonts.getSize(hud2 ? 13 : 21, Fonts.Type.COMBINED_ICONS);
+        String line = music.watermarkLine(info);
+        String note = font.hasGlyph(0x266A) ? "\u266a" : "";
+        int duration = (int)Math.max(0L, info.getDuration());
+        int position = (int)Math.max(0L, Math.min(duration > 0 ? duration : Long.MAX_VALUE, PlaybackClock.positionMs() / 1000L));
+        String time = music.watermarkText.isSelected("Title + Time") && duration > 0 ? StringUtil.getDuration(position) + " / " + StringUtil.getDuration(duration) : "";
+        float h = hud2 ? 18.0f : 16.0f;
+        float radius = hud2 ? 9.0f : 5.0f;
+        float pad = hud2 ? 7.0f : 4.5f;
+        float logoW = hud2 ? logoFont.getStringWidth(LOGO_ICON) : 10.0f;
+        float noteW = note.isEmpty() ? 0.0f : font.getStringWidth(note) + 3.0f;
+        float textBox = Math.max(40.0f, Math.min(font.getStringWidth(line), 140.0f));
+        float timeW = time.isEmpty() ? 0.0f : font.getStringWidth(time) + 8.0f;
+        float w = pad + logoW + 7.5f + noteW + textBox + timeW + pad;
+        this.setWidth((int)Math.ceil(w));
+        this.setHeight((int)Math.ceil(h));
+        if (!hud2) {
+            this.setCanDrag(false);
+            if (hud.watermarkCentered.isValue()) {
+                this.setX((window.getScaledWidth() - this.getWidth()) / 2);
+                this.setY(this.centeredYBelowBossBar());
+            } else {
+                this.setX(6);
+                this.setY(6);
+            }
+        }
+        float x = this.getX();
+        float y = this.getY();
+        if (hud2) {
+            blur.render(ShapeProperties.create(matrix, x, y, w, h).round(radius).softness(4.0f).thickness(0.0f).quality(50.0f).outlineColor(0).color(ColorUtil.getColor(20, 20, 25, 0.5f)).build());
+            rectangle.render(ShapeProperties.create(matrix, x, y, w, h).round(radius).softness(1.0f).thickness(1.0f).quality(50.0f).outlineColor(ColorUtil.getOutline(0.35f)).color(0).build());
+            HudIconRail.drawText(matrix, logoFont, LOGO_ICON, x + pad, y, h, accent);
+        } else {
+            blur.render(ShapeProperties.create(matrix, x, y, w, h).round(radius).softness(5.0f).thickness(0.0f).quality(50.0f).outlineColor(0).color(ColorUtil.DARK_BLACK).build());
+            logoFont.drawString(matrix, LOGO_ICON, x + pad, y + 5.6f, accent);
+        }
+        float tx = x + pad + logoW + 3.0f;
+        rectangle.render(ShapeProperties.create(matrix, tx, y + (h - 9.0f) / 2.0f, 0.5, 9.0).round(5.0f).color(ColorUtil.getOutline(0.75f, 0.5f)).build());
+        tx += 4.5f;
+        float textY = hud2 ? HudIconRail.textY(font, line, y, h) : y + 6.5f;
+        if (!note.isEmpty()) {
+            // the note bounces gently to show that music is playing
+            float bounce = (float)Math.abs(Math.sin(System.currentTimeMillis() / 260.0)) * 1.2f;
+            font.drawString(matrix, note, tx, textY - bounce, accent);
+            tx += noteW;
+        }
+        ScissorManager scissor = Main.getInstance().getScissorManager();
+        scissor.push(matrix.method_23760().method_23761(), tx, y, textBox, h);
+        font.drawStringWithScroll(matrix, line, tx, textY, textBox, ColorUtil.getText());
+        scissor.pop();
+        float barX = tx;
+        float barW = textBox;
+        if (!time.isEmpty()) {
+            font.drawString(matrix, time, tx + textBox + 6.0f, textY, ColorUtil.getText(0.75f));
+            barW += timeW - 2.0f;
+        }
+        if (duration > 0) {
+            float progress = Math.min(1.0f, (float)(PlaybackClock.positionMs() / 1000.0 / duration));
+            float barY = y + h - 2.5f;
+            rectangle.render(ShapeProperties.create(matrix, barX, barY, barW, 1.0).round(0.5f).color(ColorUtil.getRectDarker(0.6f)).build());
+            rectangle.render(ShapeProperties.create(matrix, barX, barY, Math.max(1.0f, barW * progress), 1.0).round(0.5f).color(accent).build());
+        }
     }
 
     private void drawHud2(class_332 context) {

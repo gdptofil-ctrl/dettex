@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.recoin.common.util.world.ServerUtil;
-import ru.recoin.implement.features.modules.misc.SelfDestruct;
+import ru.recoin.implement.features.modules.misc.Unhook;
 
 @Mixin(value={class_419.class})
 public abstract class DisconnectedScreenMixin
@@ -53,7 +53,7 @@ extends class_437 {
 
     @Inject(method={"method_25426"}, at={@At(value="INVOKE", target="Lnet/minecraft/class_419;method_48640()V", shift=At.Shift.BEFORE)})
     private void recoin$addReconnectButton(CallbackInfo ci) {
-        if (SelfDestruct.isLocked()) {
+        if (Unhook.isLocked()) {
             return;
         }
         class_310 client = class_310.method_1551();

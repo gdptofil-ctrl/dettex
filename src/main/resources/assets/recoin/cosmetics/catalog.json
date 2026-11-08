@@ -1,0 +1,476 @@
+{
+  "wings": [
+    {
+      "name": "Angel Wings",
+      "file": "models/wings_angel_wings.json",
+      "icon": "textures/cosmetics/icons/wings_angel_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Evil Wings",
+      "file": "models/wings_evil_wings.json",
+      "icon": "textures/cosmetics/icons/wings_evil_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Dragon Wings",
+      "file": "models/wings_dragon_wings.json",
+      "icon": "textures/cosmetics/icons/wings_dragon_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Fire Wings",
+      "file": "models/wings_fire_wings.json",
+      "icon": "textures/cosmetics/icons/wings_fire_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Parrot Wings",
+      "file": "models/wings_parrot_wings.json",
+      "icon": "textures/cosmetics/icons/wings_parrot_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Bat Wings",
+      "file": "models/wings_bat_wings.json",
+      "icon": "textures/cosmetics/icons/wings_bat_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Fairy Wings",
+      "file": "models/wings_fairy_wings.json",
+      "icon": "textures/cosmetics/icons/wings_fairy_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Monarch Butterfly Wings",
+      "file": "models/wings_monarch_butterfly_wings.json",
+      "icon": "textures/cosmetics/icons/wings_monarch_butterfly_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Blue Butterfly Wings",
+      "file": "models/wings_blue_butterfly_wings.json",
+      "icon": "textures/cosmetics/icons/wings_blue_butterfly_wings.png",
+      "source": "pau101/Wings (MIT)"
+    },
+    {
+      "name": "Slime Wings",
+      "file": "models/wings_slime_wings.json",
+      "icon": "textures/cosmetics/icons/wings_slime_wings.png",
+      "source": "pau101/Wings (MIT)"
+    }
+  ],
+  "hats": [
+    {
+      "name": "67",
+      "file": "models/hat_67.json",
+      "icon": "textures/cosmetics/icons/hats_67.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Deal With It",
+      "file": "models/hat_deal_with_it.json",
+      "icon": "textures/cosmetics/icons/hats_deal_with_it.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Witch Hat",
+      "file": "models/hat_witch_hat.json",
+      "icon": "textures/cosmetics/icons/hats_witch_hat.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Jack-o'-Lantern",
+      "file": "models/hat_jack_o_lantern.json",
+      "icon": "textures/cosmetics/icons/hats_jack_o_lantern.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Traffic Cone",
+      "file": "models/hat_traffic_cone.json",
+      "icon": "textures/cosmetics/icons/hats_traffic_cone.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Top Hat",
+      "file": "models/hat_top_hat.json",
+      "icon": "textures/cosmetics/icons/hats_top_hat.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Cowboy Hat",
+      "file": "models/hat_cowboy_hat.json",
+      "icon": "textures/cosmetics/icons/hats_cowboy_hat.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Crown",
+      "file": "models/hat_crown.json",
+      "icon": "textures/cosmetics/icons/hats_crown.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Chef Hat",
+      "file": "models/hat_chef_hat.json",
+      "icon": "textures/cosmetics/icons/hats_chef_hat.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Duck",
+      "file": "models/hat_duck.json",
+      "icon": "textures/cosmetics/icons/hats_duck.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Cat Ears",
+      "file": "models/hat_cat_ears.json",
+      "icon": "textures/cosmetics/icons/hats_cat_ears.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Fedora",
+      "file": "models/hat_fedora.json",
+      "icon": "textures/cosmetics/icons/hats_fedora.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Propeller Cap",
+      "file": "models/hat_propeller_cap.json",
+      "icon": "textures/cosmetics/icons/hats_propeller_cap.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Headphones",
+      "file": "models/hat_headphones.json",
+      "icon": "textures/cosmetics/icons/hats_headphones.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Straw Hat",
+      "file": "models/hat_straw_hat.json",
+      "icon": "textures/cosmetics/icons/hats_straw_hat.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Dunce Cap",
+      "file": "models/hat_dunce_cap.json",
+      "icon": "textures/cosmetics/icons/hats_dunce_cap.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Goggles",
+      "file": "models/hat_goggles.json",
+      "icon": "textures/cosmetics/icons/hats_goggles.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Horns",
+      "file": "models/hat_horns.json",
+      "icon": "textures/cosmetics/icons/hats_horns.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Unicorn Horn",
+      "file": "models/hat_unicorn_horn.json",
+      "icon": "textures/cosmetics/icons/hats_unicorn_horn.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Mohawk",
+      "file": "models/hat_mohawk.json",
+      "icon": "textures/cosmetics/icons/hats_mohawk.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Commando",
+      "file": "models/hat_commando.json",
+      "icon": "textures/cosmetics/icons/hats_commando.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Cage",
+      "file": "models/hat_cage.json",
+      "icon": "textures/cosmetics/icons/hats_cage.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Rocket",
+      "file": "models/hat_rocket.json",
+      "icon": "textures/cosmetics/icons/hats_rocket.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Pizza",
+      "file": "models/hat_pizza.json",
+      "icon": "textures/cosmetics/icons/hats_pizza.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Sword Hat",
+      "file": "models/hat_sword_hat.json",
+      "icon": "textures/cosmetics/icons/hats_sword_hat.png",
+      "source": "fedora"
+    },
+    {
+      "name": "Xmas Hat",
+      "file": "models/hat_xmas_hat.json",
+      "icon": "textures/cosmetics/icons/hats_xmas_hat.png",
+      "source": "frenchkrab"
+    },
+    {
+      "name": "Big Xmas Hat",
+      "file": "models/hat_big_xmas_hat.json",
+      "icon": "textures/cosmetics/icons/hats_big_xmas_hat.png",
+      "source": "frenchkrab"
+    }
+  ],
+  "backpacks": [
+    {
+      "name": "Frayed Backpack",
+      "file": "models/backpack_frayed.json",
+      "icon": "textures/cosmetics/icons/backpacks_frayed_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    },
+    {
+      "name": "Baby Backpack",
+      "file": "models/backpack_baby.json",
+      "icon": "textures/cosmetics/icons/backpacks_baby_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    },
+    {
+      "name": "Plated Backpack",
+      "file": "models/backpack_plated.json",
+      "icon": "textures/cosmetics/icons/backpacks_plated_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    },
+    {
+      "name": "Gilded Backpack",
+      "file": "models/backpack_gilded.json",
+      "icon": "textures/cosmetics/icons/backpacks_gilded_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    },
+    {
+      "name": "Bejeweled Backpack",
+      "file": "models/backpack_bejeweled.json",
+      "icon": "textures/cosmetics/icons/backpacks_bejeweled_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    },
+    {
+      "name": "Blazing Backpack",
+      "file": "models/backpack_blazing.json",
+      "icon": "textures/cosmetics/icons/backpacks_blazing_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    },
+    {
+      "name": "Withered Backpack",
+      "file": "models/backpack_withered.json",
+      "icon": "textures/cosmetics/icons/backpacks_withered_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    },
+    {
+      "name": "Endless Backpack",
+      "file": "models/backpack_endless.json",
+      "icon": "textures/cosmetics/icons/backpacks_endless_backpack.png",
+      "source": "Draylar/inmis (MIT)"
+    }
+  ],
+  "halos": [
+    {
+      "name": "Golden Halo",
+      "file": "models/halo_golden_halo.json",
+      "icon": "textures/cosmetics/icons/halos_golden_halo.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Angel Halo",
+      "file": "models/halo_angel_halo.json",
+      "icon": "textures/cosmetics/icons/halos_angel_halo.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Dark Halo",
+      "file": "models/halo_dark_halo.json",
+      "icon": "textures/cosmetics/icons/halos_dark_halo.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Fire Halo",
+      "file": "models/halo_fire_halo.json",
+      "icon": "textures/cosmetics/icons/halos_fire_halo.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Ice Halo",
+      "file": "models/halo_ice_halo.json",
+      "icon": "textures/cosmetics/icons/halos_ice_halo.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Toxic Halo",
+      "file": "models/halo_toxic_halo.json",
+      "icon": "textures/cosmetics/icons/halos_toxic_halo.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Double Halo",
+      "file": "models/halo_double_halo.json",
+      "icon": "textures/cosmetics/icons/halos_double_halo.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Crown Halo",
+      "file": "models/halo_crown_halo.json",
+      "icon": "textures/cosmetics/icons/halos_crown_halo.png",
+      "source": "original (made for this client)"
+    }
+  ],
+  "player_models": [
+    {
+      "name": "Skibidi Toilet",
+      "file": "playermodels/model_skibidi_toilet.json",
+      "icon": "textures/cosmetics/icons/player_models_skibidi_toilet.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Six Seven",
+      "file": "playermodels/model_six_seven.json",
+      "icon": "textures/cosmetics/icons/player_models_six_seven.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Capybara",
+      "file": "playermodels/model_capybara.json",
+      "icon": "textures/cosmetics/icons/player_models_capybara.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Rubber Duck",
+      "file": "playermodels/model_rubber_duck.json",
+      "icon": "textures/cosmetics/icons/player_models_rubber_duck.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Banana",
+      "file": "playermodels/model_banana.json",
+      "icon": "textures/cosmetics/icons/player_models_banana.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Frog",
+      "file": "playermodels/model_frog.json",
+      "icon": "textures/cosmetics/icons/player_models_frog.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Cat",
+      "file": "playermodels/model_cat.json",
+      "icon": "textures/cosmetics/icons/player_models_cat.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Penguin",
+      "file": "playermodels/model_penguin.json",
+      "icon": "textures/cosmetics/icons/player_models_penguin.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Soldier",
+      "file": "playermodels/model_soldier.json",
+      "icon": "textures/cosmetics/icons/player_models_soldier.png",
+      "source": "FrenchKrab/mc-blockbench-models (CC BY 4.0)"
+    },
+    {
+      "name": "Flamethrower Soldier",
+      "file": "playermodels/model_flamethrower_soldier.json",
+      "icon": "textures/cosmetics/icons/player_models_flamethrower_soldier.png",
+      "source": "FrenchKrab/mc-blockbench-models (CC BY 4.0)"
+    },
+    {
+      "name": "Krab",
+      "file": "playermodels/model_krab.json",
+      "icon": "textures/cosmetics/icons/player_models_krab.png",
+      "source": "FrenchKrab/mc-blockbench-models (CC BY 4.0)"
+    },
+    {
+      "name": "Reindeer",
+      "file": "playermodels/model_reindeer.json",
+      "icon": "textures/cosmetics/icons/player_models_reindeer.png",
+      "source": "FrenchKrab/mc-blockbench-models (CC BY 4.0)"
+    },
+    {
+      "name": "Goat",
+      "file": "playermodels/model_goat.json",
+      "icon": "textures/cosmetics/icons/player_models_goat.png",
+      "source": "FrenchKrab/mc-blockbench-models (CC BY 4.0)"
+    },
+    {
+      "name": "Anime Girl",
+      "file": "playermodels/model_anime_girl.json",
+      "icon": "textures/cosmetics/icons/player_models_anime_girl.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Astronaut",
+      "file": "playermodels/model_astronaut.json",
+      "icon": "textures/cosmetics/icons/player_models_astronaut.png",
+      "source": "original (made for this client)"
+    }
+  ],
+  "capes": [
+    {
+      "name": "Midnight",
+      "texture": "minecraft:capes/recoin_midnight",
+      "icon": "textures/cosmetics/icons/capes_midnight.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Crimson",
+      "texture": "minecraft:capes/recoin_crimson",
+      "icon": "textures/cosmetics/icons/capes_crimson.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Emerald",
+      "texture": "minecraft:capes/recoin_emerald",
+      "icon": "textures/cosmetics/icons/capes_emerald.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Sunset",
+      "texture": "minecraft:capes/recoin_sunset",
+      "icon": "textures/cosmetics/icons/capes_sunset.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Ocean",
+      "texture": "minecraft:capes/recoin_ocean",
+      "icon": "textures/cosmetics/icons/capes_ocean.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Royal",
+      "texture": "minecraft:capes/recoin_royal",
+      "icon": "textures/cosmetics/icons/capes_royal.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Checker",
+      "texture": "minecraft:capes/recoin_checker",
+      "icon": "textures/cosmetics/icons/capes_checker.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Aurora",
+      "texture": "minecraft:capes/recoin_aurora",
+      "icon": "textures/cosmetics/icons/capes_aurora.png",
+      "source": "original (made for this client)"
+    },
+    {
+      "name": "Flame",
+      "texture": "minecraft:capes/recoin_flame",
+      "icon": "textures/cosmetics/icons/capes_flame.png",
+      "source": "original (made for this client)"
+    }
+  ]
+}
