@@ -179,3 +179,21 @@ jar был заблокирован запущенной игрой (javaw.exe, 
 **Итог:**
 - ...
 ```
+### 10. Fly + KillAura: полный модуль под Grim 2.4.x + Sentinel + Phase + Aegis + Watchdog
+
+**Промпт:**
+> Fly: пробел вверх, шифт вниз, WASD горизонталь, 0.28–0.34 / 0.35–0.42, обход FlyA/FlyB/Velocity/Position, jitter пакетов ±8 мс, rotation jitter ±0.015 рад, ground каждые 3–4 пакета, anomalyScore, slow-fall на 40 тиков. KillAura: адаптивный reach 4.0 (3.95 стоя / 3.85 навстречу / 3.90 в прыжке / 3.75 hurt-time), eye-to-hitbox, variance < 0.15, интервал 11–14 (каждый 10-й 16), 12% промах (каждый 8-й, 0.35 блока), desync 2 тика, held-item, pitch ±90, yaw < 40°, anomalyScore +5/−1, отключение на 60/120 тиков, без стримов/Optional/String.format, ThreadLocalRandom, primitive math, пул 8 объектов.
+
+**Что сделано:**
+- `FlyModule`: полёт через `MoveEvent` (полная замена вектора движения), вертикаль через `PlayerInput` (`comp_3163` вверх / `comp_3164` вниз), горизонталь 0.28–0.34, вертикаль 0.35–0.42, суммарный вектор ≤ 0.49 (Position); `MotionEvent` ставит `ground=true` каждый 3–4-й воздушный пакет (FlyB); jitter ротации ±0.015 рад через `RotationController.setRotation`; `anomalyScore` +3/−1, сброс после 30 чистых тиков, при > 70 — slow-fall на 40 тиков, при > 100 — сброс счётчика.
+- `PacketTiming` + `PacketTimingMixin`: кольцевой буфер на 256 пакетов без аллокаций, задерживаются только `class_2828`, ±8 мс, каждый 10-й +15 мс; daemon-thread только планирует flush через `MinecraftClient.execute`, отправка всегда в game thread через `PlayerIntersectionUtil.sendPacketWithOutEvent`.
+- `KillAuraModule`: скан только `world.getOtherEntities` в box 5×5, дистанция eye-to-nearest-hitbox, адаптивный reach, изменение reach между ударами ≤ 0.10, cooldown ≥ 0.92, интервал 11–14 (каждый 10-й 16), каждый 8-й удар — swing без attack и ротация на 0.35 блока в сторону, разрыв 3 тика по одной цели, только sword/axe/mace, watchdog-проверки (nofall, regen 80 тиков, speed 0.28, sprint в воздухе), anomalyScore +5/−1 (70 → 60 тиков, 90 → 120 тиков, 30 чистых → 0).
+- `KillAuraMixin`: gate на `ClientPlayerInteractionManager.attackEntity` — отменяет удар при post-hit дистанции > 4.2, иначе учитывает попадание для hurt-time и интервалов.
+- `RotationMixin`: жёсткий clamp yaw/pitch ≤ 30° за movement-пакет относительно `serverAngle` (запас до Grim-лимита 35°/40°).
+- `ModuleRepository`: `AbilitiesFly` заменён на `FlyModule`, `KillAuraModule` добавлен перед `Aura`.
+- `mixins.json`: `FlyMixin`, `PacketTimingMixin`, `KillAuraMixin`, `RotationMixin`.
+
+**Проверка:**
+- `.\gradlew.bat build -x test --offline -PnoProxyCheck` — `BUILD SUCCESSFUL`.
+- `build/libs/RecoinDLC-1.1.jar` — 60 457 794 байт.
+- Реальный ApexTime/FunSky не тестировался (нет аккаунта/сервера); проверка только компиляцией и статическим анализом intermediary-маппингов.
