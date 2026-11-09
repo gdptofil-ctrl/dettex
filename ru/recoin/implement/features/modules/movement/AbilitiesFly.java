@@ -20,7 +20,7 @@ extends Module {
     private final ValueSetting speedSetting = new ValueSetting("Speed", "Select fly speed").setValue(2.0f).range(0.5f, 4.0f);
 
     public AbilitiesFly() {
-        super("Fly", "Fly", ModuleCategory.MOVEMENT);
+        super("AbilitiesFly", "Abilities Fly", ModuleCategory.MOVEMENT);
         this.setup(this.speedSetting);
     }
 

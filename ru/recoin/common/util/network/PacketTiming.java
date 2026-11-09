@@ -28,11 +28,27 @@ public final class PacketTiming {
     private static int count;
     private static long lastScheduled;
     private static int sent;
+    private static long jitterNanos = 8_000_000L;
+    private static long burstNanos = 15_000_000L;
+    private static int burstEvery = 10;
     private static volatile boolean enabled;
     private static volatile boolean flushQueued;
     private static Thread worker;
 
     private PacketTiming() {
+    }
+
+    /**
+     * Adjusts the delay profile used by the movement packet queue.
+     *
+     * @param jitter symmetric jitter in nanoseconds
+     * @param every  every Nth packet receives the extra burst delay, {@code <= 0} disables it
+     * @param burst  extra delay in nanoseconds
+     */
+    public static void setProfile(long jitter, int every, long burst) {
+        jitterNanos = Math.max(0L, jitter);
+        burstEvery = every;
+        burstNanos = Math.max(0L, burst);
     }
 
     public static boolean isEnabled() {
@@ -52,9 +68,11 @@ public final class PacketTiming {
                 return false;
             }
             long now = System.nanoTime();
-            long jitter = ThreadLocalRandom.current().nextLong(-8_000_000L, 8_000_001L);
-            if (++sent % 10 == 0) {
-                jitter += 15_000_000L;
+            long range = jitterNanos;
+            long jitter = range == 0L ? 0L : ThreadLocalRandom.current().nextLong(-range, range + 1L);
+            int every = burstEvery;
+            if (every > 0 && ++sent % every == 0) {
+                jitter += burstNanos;
             }
             long due = now + jitter;
             if (lastScheduled - now > 60_000_000L) {

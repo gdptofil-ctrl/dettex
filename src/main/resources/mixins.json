@@ -12,8 +12,6 @@
     "ClientPlayerEntityMixin",
     "FlyMixin",
     "PacketTimingMixin",
-    "KillAuraMixin",
-    "RotationMixin",
     "ClientPlayerEntityRotationAccessor",
     "ClientPlayerInteractionManagerMixin",
     "ClientPlayerInteractionManagerAccessor",
